@@ -1,0 +1,909 @@
+<!DOCTYPE html>
+<html lang="sv">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport"
+        content="width=device-width,
+        initial-scale=1.0">
+  <title>Waygo — Betalning</title>
+  <style>
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: #eef1f8;
+      font-family: Arial, sans-serif;
+      min-height: 100vh;
+    }
+
+    /* ── TOP BAR ── */
+    .topbar {
+      background: #0d1b3e;
+      padding: 16px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .topbar-title {
+      color: #fbbf24;
+      font-size: 18px;
+      font-weight: bold;
+    }
+
+    .topbar-sub {
+      color: #4a6090;
+      font-size: 12px;
+    }
+
+    .today-total {
+      text-align: right;
+    }
+
+    .total-amount {
+      color: #fbbf24;
+      font-size: 18px;
+      font-weight: bold;
+    }
+
+    .total-label {
+      color: #4a6090;
+      font-size: 11px;
+    }
+
+    /* ── PAGE ── */
+    .page {
+      padding: 20px;
+    }
+
+    /* ── EARNINGS ROW ── */
+    .earnings-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .earn-card {
+      background: white;
+      border-radius: 12px;
+      padding: 14px 10px;
+      text-align: center;
+      border: 1px solid #d0d7ea;
+    }
+
+    .earn-number {
+      font-size: 20px;
+      font-weight: bold;
+      margin-bottom: 4px;
+    }
+
+    .earn-label {
+      font-size: 10px;
+      color: #64748b;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    /* ── SECTION TITLE ── */
+    .section-title {
+      font-size: 11px;
+      font-weight: bold;
+      color: #64748b;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      margin-bottom: 10px;
+      margin-top: 20px;
+    }
+
+    /* ── PAYMENT CARD ── */
+    .payment-card {
+      background: white;
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 10px;
+      border: 1px solid #d0d7ea;
+    }
+
+    .payment-card.refund-needed {
+      border-color: #f97316;
+      box-shadow: 0 0 0 2px #fed7aa;
+    }
+
+    .payment-card.invoice-pending {
+      border-color: #a78bfa;
+      box-shadow: 0 0 0 2px #ede9fe;
+    }
+
+    .payment-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 10px;
+    }
+
+    .payment-id {
+      font-size: 13px;
+      font-weight: bold;
+      color: #1a56db;
+    }
+
+    .payment-time {
+      font-size: 11px;
+      color: #94a3b8;
+      margin-top: 2px;
+    }
+
+    /* ── BADGES ── */
+    .badge {
+      padding: 3px 10px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: bold;
+      white-space: nowrap;
+    }
+
+    .badge-paid {
+      background: #dcfce7;
+      color: #15803d;
+      border: 1px solid #86efac;
+    }
+
+    .badge-pending {
+      background: #fef3c7;
+      color: #d97706;
+      border: 1px solid #fde68a;
+    }
+
+    .badge-refund {
+      background: #fee2e2;
+      color: #dc2626;
+      border: 1px solid #fecaca;
+    }
+
+    .badge-invoice {
+      background: #ede9fe;
+      color: #7c3aed;
+      border: 1px solid #ddd6fe;
+    }
+
+    .badge-refunded {
+      background: #ccfbf1;
+      color: #0d9488;
+      border: 1px solid #99f6e4;
+    }
+
+    /* ── PAYMENT DETAILS ── */
+    .payment-customer {
+      font-size: 14px;
+      font-weight: 600;
+      color: #0d1b3e;
+      margin-bottom: 2px;
+    }
+
+    .payment-route {
+      font-size: 12px;
+      color: #64748b;
+      margin-bottom: 10px;
+    }
+
+    .payment-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 8px 0;
+      border-top: 1px solid #f1f5f9;
+    }
+
+    .payment-method {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 13px;
+      color: #64748b;
+    }
+
+    .payment-amount {
+      font-size: 18px;
+      font-weight: bold;
+      color: #0d1b3e;
+    }
+
+    /* ── VAT ROW ── */
+    .vat-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 11px;
+      color: #94a3b8;
+      margin-top: 4px;
+    }
+
+    /* ── BUTTONS ── */
+    .actions {
+      display: flex;
+      gap: 8px;
+      margin-top: 12px;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      padding: 8px 14px;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: bold;
+      border: none;
+      cursor: pointer;
+      flex: 1;
+      text-align: center;
+    }
+
+    .btn-green {
+      background: #15803d;
+      color: white;
+    }
+
+    .btn-purple {
+      background: #7c3aed;
+      color: white;
+    }
+
+    .btn-teal {
+      background: #0d9488;
+      color: white;
+    }
+
+    .btn-navy {
+      background: #0d1b3e;
+      color: #fbbf24;
+    }
+
+    .btn-gray {
+      background: #f1f5f9;
+      color: #64748b;
+    }
+
+    .btn-red {
+      background: #dc2626;
+      color: white;
+    }
+
+    /* ── MODAL OVERLAY ── */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.5);
+      z-index: 200;
+      align-items: flex-end;
+      justify-content: center;
+    }
+
+    .modal-overlay.open {
+      display: flex;
+    }
+
+    .modal-box {
+      background: white;
+      border-radius: 20px 20px 0 0;
+      padding: 24px 20px;
+      width: 100%;
+      max-width: 500px;
+    }
+
+    .modal-title {
+      font-size: 17px;
+      font-weight: bold;
+      color: #0d1b3e;
+      margin-bottom: 16px;
+    }
+
+    .modal-detail {
+      background: #eef1f8;
+      border-radius: 10px;
+      padding: 14px;
+      margin-bottom: 16px;
+      font-size: 13px;
+      color: #64748b;
+      line-height: 1.8;
+    }
+
+    .modal-detail strong {
+      color: #0d1b3e;
+    }
+
+    .modal-actions {
+      display: flex;
+      gap: 10px;
+    }
+
+    .modal-btn {
+      flex: 1;
+      padding: 14px;
+      border-radius: 10px;
+      font-size: 14px;
+      font-weight: bold;
+      border: none;
+      cursor: pointer;
+    }
+
+    .modal-btn-confirm {
+      background: #15803d;
+      color: white;
+    }
+
+    .modal-btn-cancel {
+      background: #f1f5f9;
+      color: #64748b;
+    }
+
+    /* ── SUCCESS TOAST ── */
+    .toast {
+      position: fixed;
+      bottom: 90px;
+      left: 20px;
+      right: 20px;
+      background: #0d1b3e;
+      color: #fbbf24;
+      padding: 14px 20px;
+      border-radius: 12px;
+      font-size: 14px;
+      font-weight: bold;
+      text-align: center;
+      z-index: 300;
+      display: none;
+      box-shadow: 0 4px 20px
+        rgba(0,0,0,0.3);
+    }
+
+    .toast.show {
+      display: block;
+      animation: slideUp 0.3s ease;
+    }
+
+    @keyframes slideUp {
+      from {
+        transform: translateY(20px);
+        opacity: 0;
+      }
+      to {
+        transform: translateY(0);
+        opacity: 1;
+      }
+    }
+
+    /* ── BOTTOM NAV ── */
+    .bottom-nav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: #0d1b3e;
+      display: flex;
+      justify-content: space-around;
+      padding: 12px 0;
+      border-top: 1px solid #1a2f5e;
+    }
+
+    .nav-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      color: #4a6090;
+      font-size: 10px;
+      cursor: pointer;
+      text-decoration: none;
+    }
+
+    .nav-item.active {
+      color: #fbbf24;
+    }
+
+    .nav-icon { font-size: 20px; }
+    .bottom-space { height: 90px; }
+
+  </style>
+</head>
+
+<body>
+
+  <!-- TOP BAR -->
+  <div class="topbar">
+    <div>
+      <div class="topbar-title">
+        ▲ Betalning
+      </div>
+      <div class="topbar-sub">
+        Waygo Central
+      </div>
+    </div>
+    <div class="today-total">
+      <div class="total-amount">
+        3 520 kr
+      </div>
+      <div class="total-label">
+        Idag totalt
+      </div>
+    </div>
+  </div>
+
+  <!-- PAGE -->
+  <div class="page">
+
+    <!-- EARNINGS SUMMARY -->
+    <div class="earnings-grid">
+
+      <div class="earn-card">
+        <div class="earn-number"
+             style="color:#15803d">
+          2 960 kr
+        </div>
+        <div class="earn-label">
+          Betalt
+        </div>
+      </div>
+
+      <div class="earn-card">
+        <div class="earn-number"
+             style="color:#d97706">
+          560 kr
+        </div>
+        <div class="earn-label">
+          Väntar
+        </div>
+      </div>
+
+      <div class="earn-card">
+        <div class="earn-number"
+             style="color:#dc2626">
+          215 kr
+        </div>
+        <div class="earn-label">
+          Återbet.
+        </div>
+      </div>
+
+    </div>
+
+    <!-- NEEDS ACTION -->
+    <div class="section-title">
+      ⚠️ Kräver åtgärd
+    </div>
+
+    <!-- REFUND NEEDED -->
+    <div class="payment-card
+                refund-needed">
+      <div class="payment-top">
+        <div>
+          <div class="payment-id">
+            RES-003
+          </div>
+          <div class="payment-time">
+            Avbokad · 09:58
+          </div>
+        </div>
+        <span class="badge badge-refund">
+          Återbetalning krävs
+        </span>
+      </div>
+      <div class="payment-customer">
+        Ingrid Karlsson
+      </div>
+      <div class="payment-route">
+        Lund C → Malmö Airport
+      </div>
+      <div class="payment-row">
+        <span class="payment-method">
+          💳 Kort
+        </span>
+        <span class="payment-amount">
+          215 kr
+        </span>
+      </div>
+      <div class="vat-row">
+        <span>Varav moms 25%</span>
+        <span>43 kr</span>
+      </div>
+      <div class="actions">
+        <button class="btn btn-teal"
+          onclick="openModal(
+            'refund',
+            'Ingrid Karlsson',
+            '215',
+            'RES-003')">
+          ↩ Återbetala 215 kr
+        </button>
+        <button class="btn btn-gray"
+          onclick="openModal(
+            'norefund',
+            'Ingrid Karlsson',
+            '215',
+            'RES-003')">
+          Neka återbetalning
+        </button>
+      </div>
+    </div>
+
+    <!-- INVOICE PENDING -->
+    <div class="payment-card
+                invoice-pending">
+      <div class="payment-top">
+        <div>
+          <div class="payment-id">
+            RES-002
+          </div>
+          <div class="payment-time">
+            Avslutad · 10:15
+          </div>
+        </div>
+        <span class="badge badge-invoice">
+          Faktura ej skickad
+        </span>
+      </div>
+      <div class="payment-customer">
+        Mohammed Ali
+      </div>
+      <div class="payment-route">
+        Haga Nygata → Liseberg
+      </div>
+      <div class="payment-row">
+        <span class="payment-method">
+          📄 Faktura · 30 dagar netto
+        </span>
+        <span class="payment-amount">
+          145 kr
+        </span>
+      </div>
+      <div class="vat-row">
+        <span>Varav moms 25%</span>
+        <span>29 kr</span>
+      </div>
+      <div class="actions">
+        <button class="btn btn-purple"
+          onclick="openModal(
+            'invoice',
+            'Mohammed Ali',
+            '145',
+            'RES-002')">
+          📄 Skicka faktura
+        </button>
+        <button class="btn btn-green"
+          onclick="openModal(
+            'markpaid',
+            'Mohammed Ali',
+            '145',
+            'RES-002')">
+          ✓ Markera betald
+        </button>
+      </div>
+    </div>
+
+    <!-- PAID PAYMENTS -->
+    <div class="section-title">
+      ✓ Betalda idag
+    </div>
+
+    <!-- PAID 1 -->
+    <div class="payment-card">
+      <div class="payment-top">
+        <div>
+          <div class="payment-id">
+            RES-001
+          </div>
+          <div class="payment-time">
+            Avslutad · 09:45
+          </div>
+        </div>
+        <span class="badge badge-paid">
+          Betald
+        </span>
+      </div>
+      <div class="payment-customer">
+        Anna Svensson
+      </div>
+      <div class="payment-route">
+        Centralstationen → Arlanda
+      </div>
+      <div class="payment-row">
+        <span class="payment-method">
+          📱 Swish
+        </span>
+        <span class="payment-amount">
+          320 kr
+        </span>
+      </div>
+      <div class="vat-row">
+        <span>Varav moms 25%</span>
+        <span>64 kr</span>
+      </div>
+    </div>
+
+    <!-- PAID 2 -->
+    <div class="payment-card">
+      <div class="payment-top">
+        <div>
+          <div class="payment-id">
+            RES-004
+          </div>
+          <div class="payment-time">
+            Avslutad · 08:20
+          </div>
+        </div>
+        <span class="badge badge-paid">
+          Betald
+        </span>
+      </div>
+      <div class="payment-customer">
+        Johan Berg
+      </div>
+      <div class="payment-route">
+        Göteborg C → Landvetter
+      </div>
+      <div class="payment-row">
+        <span class="payment-method">
+          💳 Kort
+        </span>
+        <span class="payment-amount">
+          480 kr
+        </span>
+      </div>
+      <div class="vat-row">
+        <span>Varav moms 25%</span>
+        <span>96 kr</span>
+      </div>
+    </div>
+
+    <!-- REFUNDED -->
+    <div class="section-title">
+      Återbetalade
+    </div>
+
+    <div class="payment-card">
+      <div class="payment-top">
+        <div>
+          <div class="payment-id">
+            RES-005
+          </div>
+          <div class="payment-time">
+            Avbokad · 08:05
+          </div>
+        </div>
+        <span class="badge badge-refunded">
+          Återbetald
+        </span>
+      </div>
+      <div class="payment-customer">
+        Sara Nilsson
+      </div>
+      <div class="payment-route">
+        Malmö C → Sturup Airport
+      </div>
+      <div class="payment-row">
+        <span class="payment-method">
+          📱 Swish
+        </span>
+        <span class="payment-amount">
+          215 kr
+        </span>
+      </div>
+    </div>
+
+    <div class="bottom-space"></div>
+
+  </div>
+
+  <!-- MODAL -->
+  <div class="modal-overlay"
+       id="modalOverlay"
+       onclick="closeModal(event)">
+    <div class="modal-box">
+
+      <div class="modal-title"
+           id="modalTitle">
+        Bekräfta åtgärd
+      </div>
+
+      <div class="modal-detail"
+           id="modalDetail">
+      </div>
+
+      <div class="modal-actions">
+        <button class="modal-btn
+                        modal-btn-cancel"
+                onclick="closeModal()">
+          Avbryt
+        </button>
+        <button class="modal-btn
+                        modal-btn-confirm"
+                id="modalConfirmBtn"
+                onclick="confirmAction()">
+          Bekräfta
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- TOAST -->
+  <div class="toast" id="toast"></div>
+
+  <!-- BOTTOM NAVIGATION -->
+  <div class="bottom-nav">
+
+    <a href="dashboard.html"
+       class="nav-item">
+      <span class="nav-icon">📋</span>
+      <span>Bokningar</span>
+    </a>
+
+    <a href="#"
+       class="nav-item">
+      <span class="nav-icon">🗺️</span>
+      <span>Karta</span>
+    </a>
+
+    <a href="drivers.html"
+       class="nav-item">
+      <span class="nav-icon">🚖</span>
+      <span>Förare</span>
+    </a>
+
+    <a href="chat.html"
+       class="nav-item">
+      <span class="nav-icon">💬</span>
+      <span>Chatt</span>
+    </a>
+
+    <a href="payment.html"
+       class="nav-item active">
+      <span class="nav-icon">💳</span>
+      <span>Betalning</span>
+    </a>
+
+  </div>
+
+  <script>
+
+    let currentAction = '';
+    let currentName = '';
+    let currentAmount = '';
+    let currentId = '';
+
+    // ── OPEN MODAL ──
+    function openModal(
+      action, name, amount, id) {
+
+      currentAction = action;
+      currentName = name;
+      currentAmount = amount;
+      currentId = id;
+
+      const titles = {
+        refund: '↩ Bekräfta återbetalning',
+        norefund: 'Neka återbetalning',
+        invoice: '📄 Skicka faktura',
+        markpaid: '✓ Markera som betald'
+      };
+
+      const details = {
+        refund: `
+          <strong>Kund:</strong>
+          ${name}<br>
+          <strong>Bokning:</strong>
+          ${id}<br>
+          <strong>Belopp:</strong>
+          ${amount} kr<br>
+          <strong>Metod:</strong>
+          Återbetalning till kort<br>
+          <strong>Tid:</strong>
+          1-3 bankdagar
+        `,
+        norefund: `
+          <strong>Kund:</strong>
+          ${name}<br>
+          <strong>Bokning:</strong>
+          ${id}<br>
+          Återbetalning nekas.
+          Kunden meddelas via SMS.
+        `,
+        invoice: `
+          <strong>Kund:</strong>
+          ${name}<br>
+          <strong>Bokning:</strong>
+          ${id}<br>
+          <strong>Belopp:</strong>
+          ${amount} kr inkl. moms<br>
+          <strong>Förfallodatum:</strong>
+          30 dagar netto<br>
+          Faktura skickas till
+          kundens e-post.
+        `,
+        markpaid: `
+          <strong>Kund:</strong>
+          ${name}<br>
+          <strong>Bokning:</strong>
+          ${id}<br>
+          <strong>Belopp:</strong>
+          ${amount} kr<br>
+          Markeras som manuellt betald.
+        `
+      };
+
+      const confirmColors = {
+        refund: '#0d9488',
+        norefund: '#dc2626',
+        invoice: '#7c3aed',
+        markpaid: '#15803d'
+      };
+
+      document.getElementById(
+        'modalTitle').textContent =
+          titles[action];
+      document.getElementById(
+        'modalDetail').innerHTML =
+          details[action];
+      document.getElementById(
+        'modalConfirmBtn').style
+          .background =
+            confirmColors[action];
+
+      document.getElementById(
+        'modalOverlay')
+          .classList.add('open');
+    }
+
+    // ── CLOSE MODAL ──
+    function closeModal(event) {
+      if (event && event.target !==
+          document.getElementById(
+            'modalOverlay')) return;
+      document.getElementById(
+        'modalOverlay')
+          .classList.remove('open');
+    }
+
+    // ── CONFIRM ACTION ──
+    function confirmAction() {
+      document.getElementById(
+        'modalOverlay')
+          .classList.remove('open');
+
+      const messages = {
+        refund: `✓ Återbetalning
+          ${currentAmount} kr skickad
+          till ${currentName}`,
+        norefund: `✕ Återbetalning nekad
+          för ${currentName}`,
+        invoice: `📄 Faktura skickad
+          till ${currentName}`,
+        markpaid: `✓ ${currentId}
+          markerad som betald`
+      };
+
+      showToast(
+        messages[currentAction]);
+    }
+
+    // ── SHOW TOAST ──
+    function showToast(message) {
+      const toast =
+        document.getElementById('toast');
+      toast.textContent = message;
+      toast.classList.add('show');
+      setTimeout(() => {
+        toast.classList.remove('show');
+      }, 3000);
+    }
+
+  </script>
+
+</body>
+</html>

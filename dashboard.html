@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="sv">
 
@@ -325,9 +326,13 @@
       <div class="live-dot"></div>
       <span class="live-text">LIVE</span>
     </div>
-    <span class="dispatcher-name">
-      Dispatcher
-    </span>
+    <button onclick="logout()"
+  style="background:#1a2f5e;
+  color:#94a3b8;border:none;
+  border-radius:8px;padding:8px 14px;
+  font-size:12px;cursor:pointer;">
+  Logga ut
+</button>
   </div>
 
   <!-- PAGE CONTENT -->
@@ -533,13 +538,30 @@
       <span>Chatt</span>
     </a>
 
-    <a href="#"
-       class="nav-item">
-      <span class="nav-icon">💳</span>
-      <span>Betalning</span>
-    </a>
+    <a href="payment.html"
+   class="nav-item">
+  <span class="nav-icon">💳</span>
+  <span>Betalning</span>
+</a>
 
   </div>
+<script>
+  // Check login
+  if (localStorage.getItem(
+    'waygo_logged_in') !== 'true') {
+    window.location.href =
+      'index.html';
+  }
 
+  // Logout function
+  function logout() {
+    localStorage.removeItem(
+      'waygo_logged_in');
+    localStorage.removeItem(
+      'waygo_user');
+    window.location.href =
+      'index.html';
+  }
+</script>
 </body>
 </html>

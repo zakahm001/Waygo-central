@@ -266,6 +266,7 @@
       color: #4a6090;
       font-size: 10px;
       cursor: pointer;
+      text-decoration: none;
     }
 
     .nav-item.active {
@@ -318,7 +319,9 @@
   <!-- TOP BAR -->
   <div class="topbar">
     <div class="topbar-left">
-      <span class="logo-text">▲ WAYGO</span>
+      <span class="logo-text">
+        ▲ WAYGO
+      </span>
       <div class="live-dot"></div>
       <span class="live-text">LIVE</span>
     </div>
@@ -334,23 +337,39 @@
     <div class="stats-grid">
 
       <div class="stat-card">
-        <div class="stat-number green">3</div>
-        <div class="stat-label">Aktiva resor</div>
+        <div class="stat-number green">
+          3
+        </div>
+        <div class="stat-label">
+          Aktiva resor
+        </div>
       </div>
 
       <div class="stat-card">
-        <div class="stat-number orange">2</div>
-        <div class="stat-label">Väntar</div>
+        <div class="stat-number orange">
+          2
+        </div>
+        <div class="stat-label">
+          Väntar
+        </div>
       </div>
 
       <div class="stat-card">
-        <div class="stat-number blue">2</div>
-        <div class="stat-label">Lediga förare</div>
+        <div class="stat-number blue">
+          2
+        </div>
+        <div class="stat-label">
+          Lediga förare
+        </div>
       </div>
 
       <div class="stat-card">
-        <div class="stat-number red">1</div>
-        <div class="stat-label">Avbokn. förfrågan</div>
+        <div class="stat-number red">
+          1
+        </div>
+        <div class="stat-label">
+          Avbokn. förfrågan
+        </div>
       </div>
 
     </div>
@@ -373,7 +392,9 @@
     <!-- BOOKING 1 -->
     <div class="booking-card">
       <div class="booking-top">
-        <span class="booking-id">RES-001</span>
+        <span class="booking-id">
+          RES-001
+        </span>
         <span class="badge badge-green">
           Tilldelad
         </span>
@@ -388,10 +409,14 @@
         <span class="booking-driver">
           🚖 Erik Lindström
         </span>
-        <span class="booking-fare">320 kr</span>
+        <span class="booking-fare">
+          320 kr
+        </span>
       </div>
       <div class="actions">
-        <button class="btn btn-navy">
+        <button class="btn btn-navy"
+          onclick="window.location
+            ='chat.html'">
           💬 Chatta
         </button>
         <button class="btn btn-orange">
@@ -406,7 +431,9 @@
     <!-- BOOKING 2 - URGENT -->
     <div class="booking-card urgent">
       <div class="booking-top">
-        <span class="booking-id">RES-003</span>
+        <span class="booking-id">
+          RES-003
+        </span>
         <span class="badge badge-red">
           Avbokn. förfrågan
         </span>
@@ -421,7 +448,9 @@
         <span class="booking-driver">
           🚖 Lars Petersson
         </span>
-        <span class="booking-fare">215 kr</span>
+        <span class="booking-fare">
+          215 kr
+        </span>
       </div>
       <div class="actions">
         <button class="btn btn-green">
@@ -442,7 +471,9 @@
     <!-- BOOKING 3 -->
     <div class="booking-card">
       <div class="booking-top">
-        <span class="booking-id">RES-002</span>
+        <span class="booking-id">
+          RES-002
+        </span>
         <span class="badge badge-yellow">
           Väntar
         </span>
@@ -457,7 +488,9 @@
         <span class="booking-driver">
           Ingen förare ännu
         </span>
-        <span class="booking-fare">145 kr</span>
+        <span class="booking-fare">
+          145 kr
+        </span>
       </div>
       <div class="actions">
         <button class="btn btn-green">
@@ -476,30 +509,35 @@
   <!-- BOTTOM NAVIGATION -->
   <div class="bottom-nav">
 
-    <div class="nav-item active">
+    <a href="dashboard.html"
+       class="nav-item active">
       <span class="nav-icon">📋</span>
       <span>Bokningar</span>
-    </div>
+    </a>
 
-    <div class="nav-item">
+    <a href="#"
+       class="nav-item">
       <span class="nav-icon">🗺️</span>
       <span>Karta</span>
-    </div>
+    </a>
 
-    <div class="nav-item">
+    <a href="drivers.html"
+       class="nav-item">
       <span class="nav-icon">🚖</span>
       <span>Förare</span>
-    </div>
+    </a>
 
-    <div class="nav-item">
+    <a href="chat.html"
+       class="nav-item">
       <span class="nav-icon">💬</span>
       <span>Chatt</span>
-    </div>
+    </a>
 
-    <div class="nav-item">
+    <a href="#"
+       class="nav-item">
       <span class="nav-icon">💳</span>
       <span>Betalning</span>
-    </div>
+    </a>
 
   </div>
 

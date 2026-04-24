@@ -3,8 +3,8 @@
 
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" 
-        content="width=device-width, 
+  <meta name="viewport"
+        content="width=device-width,
         initial-scale=1.0">
   <title>Waygo Central</title>
   <style>
@@ -18,70 +18,223 @@
     body {
       background: #0d1b3e;
       font-family: Arial, sans-serif;
+      min-height: 100vh;
       display: flex;
+      flex-direction: column;
       justify-content: center;
       align-items: center;
-      height: 100vh;
+      padding: 20px;
     }
 
-    .login-box {
-      background: #1a2f5e;
-      padding: 40px;
-      border-radius: 16px;
-      width: 90%;
+    /* ── LOADING SCREEN ── */
+    .loader {
+      position: fixed;
+      inset: 0;
+      background: #0d1b3e;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 999;
+      transition: opacity 0.5s;
+    }
+
+    .loader.hidden {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .loader-logo {
+      font-size: 64px;
+      color: #fbbf24;
+      margin-bottom: 16px;
+      animation: bounce 1s infinite;
+    }
+
+    .loader-text {
+      color: #fbbf24;
+      font-size: 22px;
+      font-weight: bold;
+      letter-spacing: 3px;
+    }
+
+    .loader-sub {
+      color: #4a6090;
+      font-size: 13px;
+      margin-top: 8px;
+    }
+
+    .loader-dots {
+      display: flex;
+      gap: 8px;
+      margin-top: 32px;
+    }
+
+    .loader-dot {
+      width: 10px;
+      height: 10px;
+      background: #fbbf24;
+      border-radius: 50%;
+      animation: dotPulse 1.2s
+        infinite ease-in-out;
+    }
+
+    .loader-dot:nth-child(2) {
+      animation-delay: 0.2s;
+    }
+
+    .loader-dot:nth-child(3) {
+      animation-delay: 0.4s;
+    }
+
+    @keyframes dotPulse {
+      0%, 80%, 100% {
+        transform: scale(0.6);
+        opacity: 0.4;
+      }
+      40% {
+        transform: scale(1);
+        opacity: 1;
+      }
+    }
+
+    @keyframes bounce {
+      0%, 100% { transform:
+        translateY(0); }
+      50% { transform:
+        translateY(-10px); }
+    }
+
+    /* ── LOGIN BOX ── */
+    .login-wrap {
+      width: 100%;
       max-width: 400px;
-      text-align: center;
     }
 
-    .logo {
-      font-size: 48px;
+    .logo-area {
+      text-align: center;
+      margin-bottom: 36px;
+    }
+
+    .logo-icon {
+      font-size: 56px;
+      color: #fbbf24;
+      display: block;
       margin-bottom: 8px;
     }
 
-    .app-name {
-      color: #fbbf24;
-      font-size: 28px;
+    .logo-name {
+      font-size: 32px;
       font-weight: bold;
-      margin-bottom: 4px;
+      color: #fbbf24;
+      letter-spacing: 4px;
     }
 
-    .subtitle {
-      color: #94a3b8;
-      font-size: 14px;
-      margin-bottom: 32px;
+    .logo-sub {
+      color: #4a6090;
+      font-size: 13px;
+      margin-top: 6px;
     }
 
-    input {
+    /* ── FORM ── */
+    .login-box {
+      background: #1a2f5e;
+      border-radius: 16px;
+      padding: 28px 24px;
+      border: 1px solid #2a4080;
+    }
+
+    .form-label {
+      font-size: 11px;
+      color: #64748b;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 6px;
+      display: block;
+    }
+
+    .form-input {
       width: 100%;
-      padding: 14px;
+      padding: 14px 16px;
       margin-bottom: 16px;
-      border-radius: 8px;
+      border-radius: 10px;
       border: 1px solid #2a4080;
       background: #0d1b3e;
       color: white;
-      font-size: 16px;
+      font-size: 15px;
+      outline: none;
+      box-sizing: border-box;
+      transition: border-color 0.2s;
     }
 
-    input::placeholder {
-      color: #4a6090;
+    .form-input:focus {
+      border-color: #fbbf24;
     }
 
-    button {
+    .form-input::placeholder {
+      color: #2a4080;
+    }
+
+    .error-msg {
+      background: #fee2e2;
+      color: #dc2626;
+      border-radius: 8px;
+      padding: 10px 14px;
+      font-size: 13px;
+      margin-bottom: 16px;
+      display: none;
+      font-weight: 600;
+    }
+
+    .error-msg.show {
+      display: block;
+    }
+
+    .login-btn {
       width: 100%;
-      padding: 14px;
+      padding: 16px;
       background: #fbbf24;
       color: #0d1b3e;
       font-size: 16px;
       font-weight: bold;
       border: none;
-      border-radius: 8px;
+      border-radius: 10px;
       cursor: pointer;
+      letter-spacing: 1px;
+      transition: opacity 0.2s;
     }
 
-    .version {
+    .login-btn:active {
+      opacity: 0.85;
+    }
+
+    .login-btn.loading {
+      opacity: 0.7;
+      cursor: default;
+    }
+
+    /* ── DEMO HINT ── */
+    .demo-hint {
+      margin-top: 20px;
+      background: #0d1b3e;
+      border: 1px solid #2a4080;
+      border-radius: 10px;
+      padding: 12px 16px;
+      font-size: 12px;
+      color: #4a6090;
+      text-align: center;
+    }
+
+    .demo-hint strong {
+      color: #fbbf24;
+    }
+
+    /* ── FOOTER ── */
+    .login-footer {
+      text-align: center;
+      margin-top: 24px;
       color: #2a4080;
       font-size: 11px;
-      margin-top: 24px;
     }
 
   </style>
@@ -89,50 +242,170 @@
 
 <body>
 
-  <div class="login-box">
-
-    <div class="logo">▲</div>
-    <div class="app-name">WAYGO</div>
-    <div class="subtitle">
+  <!-- LOADING SCREEN -->
+  <div class="loader" id="loader">
+    <div class="loader-logo">▲</div>
+    <div class="loader-text">WAYGO</div>
+    <div class="loader-sub">
       Central Dispatch · Sverige
     </div>
+    <div class="loader-dots">
+      <div class="loader-dot"></div>
+      <div class="loader-dot"></div>
+      <div class="loader-dot"></div>
+    </div>
+  </div>
 
-    <input 
-      type="email" 
-      placeholder="E-postadress"
-      id="email"
-    />
+  <!-- LOGIN -->
+  <div class="login-wrap">
 
-    <input 
-      type="password" 
-      placeholder="Lösenord"
-      id="password"
-    />
+    <div class="logo-area">
+      <span class="logo-icon">▲</span>
+      <div class="logo-name">WAYGO</div>
+      <div class="logo-sub">
+        Central Dispatch · Sverige
+      </div>
+    </div>
 
-    <button onclick="login()">
-      Logga in
-    </button>
+    <div class="login-box">
 
-    <div class="version">
-      Waygo Central v1.0
+      <label class="form-label">
+        E-postadress
+      </label>
+      <input
+        class="form-input"
+        type="email"
+        id="email"
+        placeholder="din@email.se"
+      />
+
+      <label class="form-label">
+        Lösenord
+      </label>
+      <input
+        class="form-input"
+        type="password"
+        id="password"
+        placeholder="••••••••"
+      />
+
+      <div class="error-msg"
+           id="errorMsg">
+        ⚠️ Fel e-post eller lösenord.
+        Försök igen.
+      </div>
+
+      <button
+        class="login-btn"
+        id="loginBtn"
+        onclick="doLogin()">
+        Logga in →
+      </button>
+
+      <div class="demo-hint">
+        Demo: <strong>
+          central@waygo.se
+        </strong>
+        · lösenord:
+        <strong>waygo123</strong>
+      </div>
+
+    </div>
+
+    <div class="login-footer">
+      Waygo Central v1.0 ·
+      © 2025 Waygo Sverige
     </div>
 
   </div>
 
   <script>
-    function login() {
-      const email = 
-        document.getElementById('email').value;
-      const password = 
-        document.getElementById('password').value;
 
-      if (email === '' || password === '') {
-        alert('Fyll i alla fält');
+    // ── HIDE LOADER AFTER 2 SECONDS ──
+    window.addEventListener(
+      'load', function() {
+      setTimeout(function() {
+        document.getElementById(
+          'loader').classList
+            .add('hidden');
+      }, 2000);
+    });
+
+    // ── LOGIN FUNCTION ──
+    function doLogin() {
+      const email =
+        document.getElementById(
+          'email').value.trim();
+      const password =
+        document.getElementById(
+          'password').value.trim();
+      const btn =
+        document.getElementById(
+          'loginBtn');
+      const err =
+        document.getElementById(
+          'errorMsg');
+
+      // Hide old error
+      err.classList.remove('show');
+
+      // Check empty fields
+      if (!email || !password) {
+        err.textContent =
+          '⚠️ Fyll i alla fält.';
+        err.classList.add('show');
         return;
       }
 
-      alert('Välkommen till Waygo Central!');
+      // Show loading state
+      btn.textContent = 'Loggar in...';
+      btn.classList.add('loading');
+
+      // Check credentials
+      setTimeout(function() {
+        if (
+          email ===
+            'central@waygo.se' &&
+          password === 'waygo123'
+        ) {
+          // Save login to browser
+          localStorage.setItem(
+            'waygo_logged_in', 'true');
+          localStorage.setItem(
+            'waygo_user', email);
+
+          // Go to dashboard
+          window.location.href =
+            'dashboard.html';
+        } else {
+          // Show error
+          btn.textContent =
+            'Logga in →';
+          btn.classList
+            .remove('loading');
+          err.textContent =
+            '⚠️ Fel e-post eller ' +
+            'lösenord. Försök igen.';
+          err.classList.add('show');
+        }
+      }, 1500);
     }
+
+    // ── LOGIN ON ENTER KEY ──
+    document.addEventListener(
+      'keydown', function(e) {
+      if (e.key === 'Enter') {
+        doLogin();
+      }
+    });
+
+    // ── CHECK IF ALREADY LOGGED IN ──
+    if (localStorage.getItem(
+      'waygo_logged_in') === 'true') {
+      window.location.href =
+        'dashboard.html';
+    }
+
   </script>
 
 </body>

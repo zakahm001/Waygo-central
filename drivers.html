@@ -1,0 +1,708 @@
+
+<!DOCTYPE html>
+<html lang="sv">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport"
+        content="width=device-width,
+        initial-scale=1.0">
+  <title>Waygo — Förare</title>
+  <style>
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: #eef1f8;
+      font-family: Arial, sans-serif;
+      min-height: 100vh;
+    }
+
+    /* ── TOP BAR ── */
+    .topbar {
+      background: #0d1b3e;
+      padding: 16px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .topbar-title {
+      color: #fbbf24;
+      font-size: 18px;
+      font-weight: bold;
+    }
+
+    .topbar-sub {
+      color: #4a6090;
+      font-size: 12px;
+    }
+
+    .live-badge {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .live-dot {
+      width: 8px;
+      height: 8px;
+      background: #22c55e;
+      border-radius: 50%;
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0% { opacity: 1; }
+      50% { opacity: 0.3; }
+      100% { opacity: 1; }
+    }
+
+    .live-text {
+      color: #4a6090;
+      font-size: 12px;
+    }
+
+    /* ── MAP AREA ── */
+    .map-container {
+      background: #d4e8d4;
+      height: 200px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .map-grid {
+      position: absolute;
+      inset: 0;
+      opacity: 0.4;
+      background-image:
+        linear-gradient(#b8d4b8 1px,
+          transparent 1px),
+        linear-gradient(90deg,
+          #b8d4b8 1px,
+          transparent 1px);
+      background-size: 30px 30px;
+    }
+
+    /* Roads */
+    .road-h {
+      position: absolute;
+      height: 6px;
+      background: white;
+      left: 0;
+      right: 0;
+      opacity: 0.8;
+    }
+
+    .road-v {
+      position: absolute;
+      width: 6px;
+      background: white;
+      top: 0;
+      bottom: 0;
+      opacity: 0.8;
+    }
+
+    /* Driver dots on map */
+    .map-driver {
+      position: absolute;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 2px;
+      cursor: pointer;
+    }
+
+    .map-car {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      border: 3px solid white;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+    }
+
+    .map-car.busy {
+      background: #0d1b3e;
+    }
+
+    .map-car.available {
+      background: #15803d;
+    }
+
+    .map-car.offline {
+      background: #64748b;
+    }
+
+    .map-name {
+      background: rgba(0,0,0,0.7);
+      color: white;
+      font-size: 9px;
+      padding: 2px 6px;
+      border-radius: 8px;
+      white-space: nowrap;
+    }
+
+    .map-label {
+      position: absolute;
+      bottom: 8px;
+      left: 8px;
+      background: rgba(255,255,255,0.85);
+      padding: 4px 10px;
+      border-radius: 8px;
+      font-size: 11px;
+      color: #0d1b3e;
+      font-weight: bold;
+    }
+
+    /* ── PAGE CONTENT ── */
+    .page {
+      padding: 20px;
+    }
+
+    /* ── SUMMARY ROW ── */
+    .summary-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .summary-card {
+      background: white;
+      border-radius: 10px;
+      padding: 12px 8px;
+      text-align: center;
+      border: 1px solid #d0d7ea;
+    }
+
+    .summary-number {
+      font-size: 26px;
+      font-weight: bold;
+    }
+
+    .summary-label {
+      font-size: 10px;
+      color: #64748b;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    /* ── SECTION TITLE ── */
+    .section-title {
+      font-size: 11px;
+      font-weight: bold;
+      color: #64748b;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      margin-bottom: 10px;
+    }
+
+    /* ── DRIVER CARD ── */
+    .driver-card {
+      background: white;
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 12px;
+      border: 1px solid #d0d7ea;
+    }
+
+    .driver-card.available {
+      border-color: #86efac;
+      box-shadow: 0 0 0 2px #dcfce7;
+    }
+
+    .driver-card.busy {
+      border-color: #93c5fd;
+      box-shadow: 0 0 0 2px #dbeafe;
+    }
+
+    .driver-card.offline {
+      opacity: 0.6;
+    }
+
+    .driver-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 12px;
+    }
+
+    .driver-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .driver-avatar {
+      width: 46px;
+      height: 46px;
+      border-radius: 50%;
+      background: #0d1b3e;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      color: #fbbf24;
+      font-weight: bold;
+      flex-shrink: 0;
+    }
+
+    .driver-name {
+      font-size: 15px;
+      font-weight: bold;
+      color: #0d1b3e;
+      margin-bottom: 2px;
+    }
+
+    .driver-details {
+      font-size: 12px;
+      color: #64748b;
+      line-height: 1.6;
+    }
+
+    /* ── STATUS BADGE ── */
+    .status-badge {
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: bold;
+      white-space: nowrap;
+    }
+
+    .status-available {
+      background: #dcfce7;
+      color: #15803d;
+      border: 1px solid #86efac;
+    }
+
+    .status-busy {
+      background: #dbeafe;
+      color: #1a56db;
+      border: 1px solid #93c5fd;
+    }
+
+    .status-offline {
+      background: #f1f5f9;
+      color: #64748b;
+      border: 1px solid #cbd5e1;
+    }
+
+    /* ── DRIVER STATS ROW ── */
+    .driver-stats {
+      display: flex;
+      gap: 16px;
+      margin-bottom: 12px;
+      padding: 10px 0;
+      border-top: 1px solid #f1f5f9;
+      border-bottom: 1px solid #f1f5f9;
+    }
+
+    .driver-stat {
+      text-align: center;
+    }
+
+    .stat-val {
+      font-size: 16px;
+      font-weight: bold;
+      color: #0d1b3e;
+    }
+
+    .stat-lbl {
+      font-size: 10px;
+      color: #94a3b8;
+    }
+
+    /* ── CURRENT TRIP ── */
+    .current-trip {
+      background: #f8fafc;
+      border-radius: 8px;
+      padding: 10px 12px;
+      margin-bottom: 12px;
+      font-size: 12px;
+      color: #64748b;
+      border: 1px solid #e2e8f0;
+    }
+
+    .trip-route {
+      color: #0d1b3e;
+      font-weight: 600;
+      margin-top: 4px;
+    }
+
+    /* ── ACTION BUTTONS ── */
+    .driver-actions {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      padding: 8px 14px;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: bold;
+      border: none;
+      cursor: pointer;
+      flex: 1;
+      min-width: 80px;
+      text-align: center;
+    }
+
+    .btn-navy {
+      background: #0d1b3e;
+      color: #fbbf24;
+    }
+
+    .btn-green {
+      background: #15803d;
+      color: white;
+    }
+
+    .btn-blue {
+      background: #1a56db;
+      color: white;
+    }
+
+    .btn-gray {
+      background: #f1f5f9;
+      color: #64748b;
+    }
+
+    .btn-red {
+      background: #dc2626;
+      color: white;
+    }
+
+    /* ── BOTTOM NAV ── */
+    .bottom-nav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: #0d1b3e;
+      display: flex;
+      justify-content: space-around;
+      padding: 12px 0;
+      border-top: 1px solid #1a2f5e;
+    }
+
+    .nav-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      color: #4a6090;
+      font-size: 10px;
+      cursor: pointer;
+      text-decoration: none;
+    }
+
+    .nav-item.active {
+      color: #fbbf24;
+    }
+
+    .nav-icon { font-size: 20px; }
+    .bottom-space { height: 80px; }
+
+  </style>
+</head>
+
+<body>
+
+  <!-- TOP BAR -->
+  <div class="topbar">
+    <div>
+      <div class="topbar-title">▲ Förare</div>
+      <div class="topbar-sub">
+        Waygo Central
+      </div>
+    </div>
+    <div class="live-badge">
+      <div class="live-dot"></div>
+      <span class="live-text">LIVE</span>
+    </div>
+  </div>
+
+  <!-- LIVE MAP -->
+  <div class="map-container">
+    <div class="map-grid"></div>
+
+    <!-- Roads -->
+    <div class="road-h" style="top:50%"></div>
+    <div class="road-h" style="top:25%"></div>
+    <div class="road-h" style="top:75%"></div>
+    <div class="road-v" style="left:50%"></div>
+    <div class="road-v" style="left:25%"></div>
+    <div class="road-v" style="left:75%"></div>
+
+    <!-- Driver 1 — Busy -->
+    <div class="map-driver"
+         style="left:48%;top:28%">
+      <div class="map-car busy">🚖</div>
+      <div class="map-name">Erik</div>
+    </div>
+
+    <!-- Driver 2 — Available -->
+    <div class="map-driver"
+         style="left:22%;top:55%">
+      <div class="map-car available">🚕</div>
+      <div class="map-name">Amina</div>
+    </div>
+
+    <!-- Driver 3 — Busy -->
+    <div class="map-driver"
+         style="left:68%;top:62%">
+      <div class="map-car busy">🚖</div>
+      <div class="map-name">Lars</div>
+    </div>
+
+    <div class="map-label">
+      📍 Live · 3 fordon
+    </div>
+  </div>
+
+  <!-- PAGE CONTENT -->
+  <div class="page">
+
+    <!-- SUMMARY -->
+    <div class="summary-row">
+      <div class="summary-card">
+        <div class="summary-number"
+             style="color:#15803d">2</div>
+        <div class="summary-label">
+          Lediga
+        </div>
+      </div>
+      <div class="summary-card">
+        <div class="summary-number"
+             style="color:#1a56db">2</div>
+        <div class="summary-label">
+          Aktiva
+        </div>
+      </div>
+      <div class="summary-card">
+        <div class="summary-number"
+             style="color:#64748b">1</div>
+        <div class="summary-label">
+          Offline
+        </div>
+      </div>
+    </div>
+
+    <!-- DRIVER 1 — BUSY -->
+    <div class="section-title">
+      Aktiva förare
+    </div>
+
+    <div class="driver-card busy">
+      <div class="driver-top">
+        <div class="driver-left">
+          <div class="driver-avatar">E</div>
+          <div>
+            <div class="driver-name">
+              Erik Lindström
+            </div>
+            <div class="driver-details">
+              ABC 123 · TL-4421<br>
+              070-111 22 33
+            </div>
+          </div>
+        </div>
+        <span class="status-badge
+                      status-busy">
+          Upptagen
+        </span>
+      </div>
+
+      <div class="driver-stats">
+        <div class="driver-stat">
+          <div class="stat-val">7</div>
+          <div class="stat-lbl">
+            Resor idag
+          </div>
+        </div>
+        <div class="driver-stat">
+          <div class="stat-val">
+            2 240 kr
+          </div>
+          <div class="stat-lbl">
+            Intäkt idag
+          </div>
+        </div>
+        <div class="driver-stat">
+          <div class="stat-val">⭐ 4.9</div>
+          <div class="stat-lbl">Betyg</div>
+        </div>
+      </div>
+
+      <div class="current-trip">
+        🚖 Aktiv resa: RES-001
+        <div class="trip-route">
+          Centralstationen → Arlanda
+        </div>
+      </div>
+
+      <div class="driver-actions">
+        <button class="btn btn-navy">
+          💬 Chatta
+        </button>
+        <button class="btn btn-green">
+          📞 Ring
+        </button>
+        <button class="btn btn-blue">
+          📍 Spåra
+        </button>
+      </div>
+    </div>
+
+    <!-- DRIVER 2 — AVAILABLE -->
+    <div class="section-title"
+         style="margin-top:16px">
+      Lediga förare
+    </div>
+
+    <div class="driver-card available">
+      <div class="driver-top">
+        <div class="driver-left">
+          <div class="driver-avatar">A</div>
+          <div>
+            <div class="driver-name">
+              Amina Warsame
+            </div>
+            <div class="driver-details">
+              DEF 456 · TL-2209<br>
+              070-444 55 66
+            </div>
+          </div>
+        </div>
+        <span class="status-badge
+                      status-available">
+          Ledig
+        </span>
+      </div>
+
+      <div class="driver-stats">
+        <div class="driver-stat">
+          <div class="stat-val">4</div>
+          <div class="stat-lbl">
+            Resor idag
+          </div>
+        </div>
+        <div class="driver-stat">
+          <div class="stat-val">
+            1 280 kr
+          </div>
+          <div class="stat-lbl">
+            Intäkt idag
+          </div>
+        </div>
+        <div class="driver-stat">
+          <div class="stat-val">⭐ 4.8</div>
+          <div class="stat-lbl">Betyg</div>
+        </div>
+      </div>
+
+      <div class="driver-actions">
+        <button class="btn btn-navy">
+          💬 Chatta
+        </button>
+        <button class="btn btn-green">
+          📞 Ring
+        </button>
+        <button class="btn btn-blue">
+          → Tilldela resa
+        </button>
+      </div>
+    </div>
+
+    <!-- DRIVER 3 — OFFLINE -->
+    <div class="section-title"
+         style="margin-top:16px">
+      Offline
+    </div>
+
+    <div class="driver-card offline">
+      <div class="driver-top">
+        <div class="driver-left">
+          <div class="driver-avatar"
+               style="background:#64748b">
+            L
+          </div>
+          <div>
+            <div class="driver-name">
+              Lars Petersson
+            </div>
+            <div class="driver-details">
+              GHI 789 · TL-8834<br>
+              070-777 88 99
+            </div>
+          </div>
+        </div>
+        <span class="status-badge
+                      status-offline">
+          Offline
+        </span>
+      </div>
+
+      <div class="driver-actions">
+        <button class="btn btn-gray">
+          💬 Skicka meddelande
+        </button>
+        <button class="btn btn-gray">
+          📞 Ring
+        </button>
+      </div>
+    </div>
+
+    <div class="bottom-space"></div>
+
+  </div>
+
+  <!-- BOTTOM NAVIGATION -->
+  <div class="bottom-nav">
+
+    <a href="dashboard.html"
+       class="nav-item">
+      <span class="nav-icon">📋</span>
+      <span>Bokningar</span>
+    </a>
+
+    <a href="#"
+       class="nav-item">
+      <span class="nav-icon">🗺️</span>
+      <span>Karta</span>
+    </a>
+
+    <a href="drivers.html"
+       class="nav-item active">
+      <span class="nav-icon">🚖</span>
+      <span>Förare</span>
+    </a>
+
+    <a href="#"
+       class="nav-item">
+      <span class="nav-icon">💬</span>
+      <span>Chatt</span>
+    </a>
+
+    <a href="#"
+       class="nav-item">
+      <span class="nav-icon">💳</span>
+      <span>Betalning</span>
+    </a>
+
+  </div>
+
+</body>
+</html>

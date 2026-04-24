@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="sv">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" 
+        content="width=device-width, 
+        initial-scale=1.0">
+  <title>Waygo Central</title>
+  <style>
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: #0d1b3e;
+      font-family: Arial, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    .login-box {
+      background: #1a2f5e;
+      padding: 40px;
+      border-radius: 16px;
+      width: 90%;
+      max-width: 400px;
+      text-align: center;
+    }
+
+    .logo {
+      font-size: 48px;
+      margin-bottom: 8px;
+    }
+
+    .app-name {
+      color: #fbbf24;
+      font-size: 28px;
+      font-weight: bold;
+      margin-bottom: 4px;
+    }
+
+    .subtitle {
+      color: #94a3b8;
+      font-size: 14px;
+      margin-bottom: 32px;
+    }
+
+    input {
+      width: 100%;
+      padding: 14px;
+      margin-bottom: 16px;
+      border-radius: 8px;
+      border: 1px solid #2a4080;
+      background: #0d1b3e;
+      color: white;
+      font-size: 16px;
+    }
+
+    input::placeholder {
+      color: #4a6090;
+    }
+
+    button {
+      width: 100%;
+      padding: 14px;
+      background: #fbbf24;
+      color: #0d1b3e;
+      font-size: 16px;
+      font-weight: bold;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    .version {
+      color: #2a4080;
+      font-size: 11px;
+      margin-top: 24px;
+    }
+
+  </style>
+</head>
+
+<body>
+
+  <div class="login-box">
+
+    <div class="logo">▲</div>
+    <div class="app-name">WAYGO</div>
+    <div class="subtitle">
+      Central Dispatch · Sverige
+    </div>
+
+    <input 
+      type="email" 
+      placeholder="E-postadress"
+      id="email"
+    />
+
+    <input 
+      type="password" 
+      placeholder="Lösenord"
+      id="password"
+    />
+
+    <button onclick="login()">
+      Logga in
+    </button>
+
+    <div class="version">
+      Waygo Central v1.0
+    </div>
+
+  </div>
+
+  <script>
+    function login() {
+      const email = 
+        document.getElementById('email').value;
+      const password = 
+        document.getElementById('password').value;
+
+      if (email === '' || password === '') {
+        alert('Fyll i alla fält');
+        return;
+      }
+
+      alert('Välkommen till Waygo Central!');
+    }
+  </script>
+
+</body>
+</html>

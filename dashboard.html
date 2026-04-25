@@ -1,72 +1,154 @@
 <!DOCTYPE html>
 <html lang="sv">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Waygo Central — Dashboard</title>
-  <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    body { background: #eef1f8; font-family: Arial, sans-serif; min-height: 100vh; }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Waygo Central — Dashboard</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { background: #eef1f8; font-family: sans-serif; padding-bottom: 80px; }
+        .topbar { background: #0d1b3e; padding: 15px; display: flex; justify-content: space-between; align-items: center; color: white; }
+        .logo { color: #fbbf24; font-weight: bold; font-size: 20px; }
+        .map-container { background: #d4e8d4; height: 200px; margin: 15px; border-radius: 12px; position: relative; overflow: hidden; border: 1px solid #ccc; }
+        .map-driver-dot { position: absolute; width: 30px; height: 30px; background: #0d1b3e; border: 2px solid #fbbf24; border-radius: 50%; display: flex; align-items: center; justify-content: center; transform: translate(-50%, -50%); transition: all 1s; }
+        .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding: 0 15px; }
+        .stat-card { background: white; padding: 15px; border-radius: 10px; text-align: center; border: 1px solid #d0d7ea; }
+        .stat-num { font-size: 24px; font-weight: bold; display: block; }
+        .booking-card { background: white; margin: 10px 15px; padding: 15px; border-radius: 10px; border: 1px solid #d0d7ea; }
+        .urgent { border-left: 5px solid #f97316; }
+        .btn { padding: 8px 12px; border-radius: 5px; border: none; font-weight: bold; cursor: pointer; margin-top: 10px; }
+        .btn-assign { background: #22c55e; color: white; margin-right: 5px; }
+        .btn-red { background: #ef4444; color: white; }
+        .bottom-nav { position: fixed; bottom: 0; width: 100%; background: #0d1b3e; display: flex; justify-content: space-around; padding: 10px 0; }
+        .nav-item { color: #4a6090; text-decoration: none; font-size: 12px; text-align: center; }
+        .active { color: #fbbf24; }
+        .toast { position: fixed; bottom: 70px; left: 10px; right: 10px; background: #333; color: white; padding: 10px; border-radius: 5px; display: none; text-align: center; }
+    </style>
+</head>
+<body>
 
-    /* ── TOP BAR ── */
-    .topbar {
-      background: #0d1b3e; padding: 16px 20px;
-      display: flex; justify-content: space-between; align-items: center;
-      position: sticky; top: 0; z-index: 100;
-    }
-    .topbar-left { display: flex; align-items: center; gap: 10px; }
-    .logo-text { color: #fbbf24; font-size: 20px; font-weight: bold; }
-    .live-dot { width: 8px; height: 8px; background: #22c55e; border-radius: 50%; animation: pulse 2s infinite; }
-    @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.3; } 100% { opacity: 1; } }
-    .live-text { color: #4a6090; font-size: 12px; }
+    <div class="topbar">
+        <div class="logo">▲ WAYGO</div>
+        <button onclick="logout()" style="background:none; border:1px solid #4a6090; color:#4a6090; padding:5px; border-radius:5px;">Logga ut</button>
+    </div>
 
-    /* ── MAP ── */
-    .map-container {
-      background: #d4e8d4; border-radius: 12px; height: 200px;
-      position: relative; overflow: hidden; margin: 20px; border: 1px solid #d0d7ea;
-    }
-    .map-bg { position: absolute; inset: 0; background-image: linear-gradient(#b8d4b8 1px, transparent 1px), linear-gradient(90deg, #b8d4b8 1px, transparent 1px); background-size: 25px 25px; opacity: 0.5; }
-    .map-driver-dot {
-      position: absolute; width: 36px; height: 36px; border-radius: 50%;
-      background: #0d1b3e; border: 3px solid #fbbf24;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 16px; transform: translate(-50%, -50%);
-      transition: all 1s ease; box-shadow: 0 2px 8px rgba(0,0,0,0.3);
-    }
-    .map-label-tag { position: absolute; background: rgba(0,0,0,0.7); color: white; font-size: 9px; padding: 2px 6px; border-radius: 8px; top: 100%; left: 50%; transform: translateX(-50%); margin-top: 2px; }
-    .map-info { position: absolute; bottom: 8px; left: 8px; background: rgba(255,255,255,0.9); border-radius: 8px; padding: 4px 10px; font-size: 11px; font-weight: bold; }
+    <div class="map-container" id="liveMap">
+        <div style="position:absolute; bottom:10px; left:10px; font-size:12px; font-weight:bold;">📍 <span id="activeCount">0</span> aktiva bilar</div>
+    </div>
 
-    /* ── STATS ── */
-    .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding: 0 20px; margin-bottom: 24px; }
-    .stat-card { background: white; border-radius: 12px; padding: 16px; border: 1px solid #d0d7ea; text-align: center; }
-    .stat-number { font-size: 32px; font-weight: bold; margin-bottom: 4px; }
-    .green { color: #15803d; } .orange { color: #d97706; } .blue { color: #1a56db; } .red { color: #dc2626; }
-    .stat-label { font-size: 10px; color: #64748b; text-transform: uppercase; }
+    <div class="stats-grid">
+        <div class="stat-card"><span class="stat-num" id="statActive">0</span><small>AKTIVA</small></div>
+        <div class="stat-card"><span class="stat-num" id="statPending" style="color:#d97706">0</span><small>VÄNTAR</small></div>
+    </div>
 
-    /* ── BOOKING CARDS ── */
-    .page { padding: 0 20px; }
-    .section-title { font-size: 11px; font-weight: bold; color: #64748b; text-transform: uppercase; margin: 20px 0 10px 0; }
-    .booking-card { background: white; border-radius: 12px; padding: 16px; margin-bottom: 10px; border: 1px solid #d0d7ea; }
-    .booking-card.urgent { border-color: #f97316; box-shadow: 0 0 0 3px #fed7aa; }
-    .booking-top { display: flex; justify-content: space-between; margin-bottom: 8px; }
-    .booking-id { color: #1a56db; font-weight: bold; font-size: 13px; }
-    .badge { padding: 3px 10px; border-radius: 20px; font-size: 10px; font-weight: bold; text-transform: uppercase; }
-    .badge-green { background: #dcfce7; color: #15803d; }
-    .badge-yellow { background: #fef3c7; color: #d97706; }
-    .badge-red { background: #fee2e2; color: #dc2626; }
-    .booking-customer { font-size: 14px; font-weight: 600; color: #0d1b3e; }
-    .booking-route { font-size: 12px; color: #64748b; margin: 4px 0 10px 0; }
-    .actions { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
-    .btn { padding: 8px 12px; border-radius: 6px; font-size: 11px; font-weight: bold; border: none; cursor: pointer; }
-    .btn-navy { background: #0d1b3e; color: #fbbf24; }
-    .btn-green { background: #15803d; color: white; }
-    .btn-red { background: #dc2626; color: white; }
+    <div id="bookingsList"></div>
+    <div id="toast" class="toast"></div>
 
-    /* ── UI ELEMENTS ── */
-    .toast { position: fixed; bottom: 80px; left: 20px; right: 20px; background: #0d1b3e; color: #fbbf24; padding: 14px; border-radius: 12px; text-align: center; display: none; z-index: 1000; }
-    .toast.show { display: block; }
-    .error-box { background: #fee2e2; color: #dc2626; padding: 12px; border-radius: 8px; margin: 20px; text-align: center; display: none; }
-    .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: #0d1b3e; display: flex; justify-content: space-around; padding: 12px 0; }
-    .nav-item { color: #4a6090; font-size: 10px; text-decoration: none; text-align: center; }
-    .nav-item.active { color: #fbbf24; }
-    .nav-icon { display
+    <nav class="bottom-nav">
+        <a href="#" class="nav-item active">📋<br>Bokningar</a>
+        <a href="drivers.html" class="nav-item">🚖<br>Förare</a>
+        <a href="chat.html" class="nav-item">💬<br>Chatt</a>
+    </nav>
+
+    <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+    <script>
+        const API = 'https://16.16.153.106.sslip.io';
+        const socket = io(API);
+
+        socket.on('connect', () => {
+            socket.emit('central:join');
+            console.log("Ansluten!");
+        });
+
+        socket.on('driver:location', (data) => {
+            const map = document.getElementById('liveMap');
+            let dot = document.getElementById('driver-' + data.driverId);
+            if (!dot) {
+                dot = document.createElement('div');
+                dot.id = 'driver-' + data.driverId;
+                dot.className = 'map-driver-dot';
+                dot.innerHTML = '🚕';
+                map.appendChild(dot);
+            }
+            // Enkel GPS-mappning för Stockholm
+            const x = ((data.lng - 17.8) / (18.2 - 17.8)) * 100;
+            const y = ((59.5 - data.lat) / (59.5 - 59.2)) * 100;
+            dot.style.left = x + '%';
+            dot.style.top = y + '%';
+            document.getElementById('activeCount').textContent = document.querySelectorAll('.map-driver-dot').length;
+        });
+
+        socket.on('booking:new', () => { showToast("Ny bokning!"); loadDashboard(); });
+
+        async function loadDashboard() {
+            try {
+                const [bRes, dRes] = await Promise.all([
+                    fetch(`${API}/bookings`),
+                    fetch(`${API}/drivers`)
+                ]);
+                const bData = await bRes.json();
+                const dData = await dRes.json();
+                const bookings = bData.bookings || [];
+                const drivers = dData.drivers || [];
+
+                // Uppdatera Stats
+                document.getElementById('statActive').textContent = bookings.filter(b => b.status === 'assigned').length;
+                document.getElementById('statPending').textContent = bookings.filter(b => b.status === 'pending').length;
+
+                // Bygg bokningskort
+                const list = document.getElementById('bookingsList');
+                list.innerHTML = bookings.map(b => {
+                    const available = drivers.filter(d => d.status === 'available');
+                    const assignBtns = b.status === 'pending' ? available.map(d => 
+                        `<button class="btn btn-assign" onclick="assign(${b.id}, ${d.id}, '${d.name}')">→ ${d.name.split(' ')[0]}</button>`
+                    ).join('') : '';
+
+                    return `
+                        <div class="booking-card ${b.cancel_request ? 'urgent' : ''}">
+                            <div style="display:flex; justify-content:space-between">
+                                <strong>${b.booking_ref}</strong>
+                                <span>${b.status}</span>
+                            </div>
+                            <div style="font-size:14px; margin:5px 0;">${b.customer_name}</div>
+                            <div style="font-size:12px; color:#666;">${b.from_address.split(',')[0]} → ${b.to_address.split(',')[0]}</div>
+                            <div>${assignBtns} <button class="btn btn-red" onclick="cancel(${b.id})">✕</button></div>
+                        </div>
+                    `;
+                }).join('') || '<p style="text-align:center;margin-top:20px;">Inga bokningar just nu.</p>';
+
+            } catch (err) {
+                console.error("Fel vid laddning:", err);
+            }
+        }
+
+        async function assign(bId, dId, name) {
+            await fetch(`${API}/bookings/${bId}/assign`, {
+                method: 'PATCH',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ driver_id: dId })
+            });
+            showToast("Tilldelad till " + name);
+            loadDashboard();
+        }
+
+        async function cancel(id) {
+            if(confirm("Avboka?")) {
+                await fetch(`${API}/bookings/${id}/cancel`, { method: 'PATCH' });
+                loadDashboard();
+            }
+        }
+
+        function showToast(msg) {
+            const t = document.getElementById('toast');
+            t.textContent = msg; t.style.display = 'block';
+            setTimeout(() => t.style.display = 'none', 3000);
+        }
+
+        function logout() { localStorage.removeItem('waygo_logged_in'); window.location.href = 'index.html'; }
+        if (localStorage.getItem('waygo_logged_in') !== 'true') window.location.href = 'index.html';
+
+        loadDashboard();
+        setInterval(loadDashboard, 30000);
+    </script>
+</body>
+</html>

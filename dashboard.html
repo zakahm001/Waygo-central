@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="sv">
 
@@ -22,7 +21,6 @@
       min-height: 100vh;
     }
 
-    /* ── TOP BAR ── */
     .topbar {
       background: #0d1b3e;
       padding: 16px 20px;
@@ -65,19 +63,10 @@
       font-size: 12px;
     }
 
-    .dispatcher-name {
-      color: #94a3b8;
-      font-size: 13px;
-    }
-
-    /* ── PAGE CONTENT ── */
     .page {
       padding: 20px;
-      max-width: 1200px;
-      margin: 0 auto;
     }
 
-    /* ── STAT CARDS ── */
     .stats-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -112,7 +101,6 @@
     .blue { color: #1a56db; }
     .red { color: #dc2626; }
 
-    /* ── SECTION TITLE ── */
     .section-title {
       font-size: 11px;
       font-weight: bold;
@@ -120,9 +108,9 @@
       text-transform: uppercase;
       letter-spacing: 1.5px;
       margin-bottom: 10px;
+      margin-top: 20px;
     }
 
-    /* ── BOOKING CARDS ── */
     .booking-card {
       background: white;
       border-radius: 12px;
@@ -204,7 +192,6 @@
       color: #0d1b3e;
     }
 
-    /* ── ACTION BUTTONS ── */
     .actions {
       display: flex;
       gap: 8px;
@@ -236,17 +223,64 @@
       color: white;
     }
 
-    .btn-blue {
-      background: #1a56db;
-      color: white;
-    }
-
     .btn-orange {
       background: #d97706;
       color: white;
     }
 
-    /* ── BOTTOM NAV ── */
+    /* ── LOADING STATE ── */
+    .loading-box {
+      text-align: center;
+      padding: 40px 20px;
+      color: #64748b;
+    }
+
+    .loading-spinner {
+      font-size: 36px;
+      animation: spin 1s linear infinite;
+      display: block;
+      margin-bottom: 12px;
+    }
+
+    @keyframes spin {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+
+    /* ── ERROR STATE ── */
+    .error-box {
+      background: #fee2e2;
+      border: 1px solid #fecaca;
+      border-radius: 12px;
+      padding: 16px;
+      text-align: center;
+      color: #dc2626;
+      font-size: 13px;
+      margin-bottom: 16px;
+      display: none;
+    }
+
+    /* ── TOAST ── */
+    .toast {
+      position: fixed;
+      bottom: 90px;
+      left: 20px;
+      right: 20px;
+      background: #0d1b3e;
+      color: #fbbf24;
+      padding: 14px 20px;
+      border-radius: 12px;
+      font-size: 14px;
+      font-weight: bold;
+      text-align: center;
+      z-index: 300;
+      display: none;
+    }
+
+    .toast.show {
+      display: block;
+    }
+
     .bottom-nav {
       position: fixed;
       bottom: 0;
@@ -270,47 +304,9 @@
       text-decoration: none;
     }
 
-    .nav-item.active {
-      color: #fbbf24;
-    }
-
-    .nav-icon {
-      font-size: 20px;
-    }
-
-    /* ── SPACE FOR BOTTOM NAV ── */
-    .bottom-space {
-      height: 80px;
-    }
-
-    /* ── ALERT BANNER ── */
-    .alert-banner {
-      background: #fee2e2;
-      border: 1px solid #fecaca;
-      border-radius: 10px;
-      padding: 12px 16px;
-      margin-bottom: 16px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    .alert-text {
-      color: #dc2626;
-      font-size: 13px;
-      font-weight: 600;
-    }
-
-    .alert-action {
-      background: #dc2626;
-      color: white;
-      border: none;
-      border-radius: 8px;
-      padding: 6px 12px;
-      font-size: 12px;
-      font-weight: bold;
-      cursor: pointer;
-    }
+    .nav-item.active { color: #fbbf24; }
+    .nav-icon { font-size: 20px; }
+    .bottom-space { height: 80px; }
 
   </style>
 </head>
@@ -327,183 +323,70 @@
       <span class="live-text">LIVE</span>
     </div>
     <button onclick="logout()"
-  style="background:#1a2f5e;
-  color:#94a3b8;border:none;
-  border-radius:8px;padding:8px 14px;
-  font-size:12px;cursor:pointer;">
-  Logga ut
-</button>
+      style="background:#1a2f5e;
+      color:#94a3b8;border:none;
+      border-radius:8px;
+      padding:8px 14px;
+      font-size:12px;cursor:pointer;">
+      Logga ut
+    </button>
   </div>
 
-  <!-- PAGE CONTENT -->
   <div class="page">
 
-    <!-- STAT CARDS -->
+    <!-- STATS -->
     <div class="stats-grid">
-
       <div class="stat-card">
-        <div class="stat-number green">
-          3
+        <div class="stat-number green"
+             id="statActive">—
         </div>
         <div class="stat-label">
           Aktiva resor
         </div>
       </div>
-
       <div class="stat-card">
-        <div class="stat-number orange">
-          2
+        <div class="stat-number orange"
+             id="statPending">—
         </div>
         <div class="stat-label">
           Väntar
         </div>
       </div>
-
       <div class="stat-card">
-        <div class="stat-number blue">
-          2
+        <div class="stat-number blue"
+             id="statDrivers">—
         </div>
         <div class="stat-label">
           Lediga förare
         </div>
       </div>
-
       <div class="stat-card">
-        <div class="stat-number red">
-          1
+        <div class="stat-number red"
+             id="statCancel">—
         </div>
         <div class="stat-label">
           Avbokn. förfrågan
         </div>
       </div>
-
     </div>
 
-    <!-- ALERT BANNER -->
-    <div class="alert-banner">
-      <span class="alert-text">
-        ⚠️ RES-003 — Kund begär avbokning
-      </span>
-      <button class="alert-action">
-        Hantera
-      </button>
+    <!-- ERROR BOX -->
+    <div class="error-box" id="errorBox">
+      ⚠️ Kunde inte ansluta till servern.
+      Kontrollera din anslutning.
     </div>
 
-    <!-- ACTIVE BOOKINGS -->
+    <!-- BOOKINGS LIST -->
     <div class="section-title">
       Aktiva bokningar
     </div>
 
-    <!-- BOOKING 1 -->
-    <div class="booking-card">
-      <div class="booking-top">
-        <span class="booking-id">
-          RES-001
+    <div id="bookingsList">
+      <div class="loading-box">
+        <span class="loading-spinner">
+          ⟳
         </span>
-        <span class="badge badge-green">
-          Tilldelad
-        </span>
-      </div>
-      <div class="booking-customer">
-        Anna Svensson
-      </div>
-      <div class="booking-route">
-        📍 Centralstationen → 🏁 Arlanda
-      </div>
-      <div class="booking-footer">
-        <span class="booking-driver">
-          🚖 Erik Lindström
-        </span>
-        <span class="booking-fare">
-          320 kr
-        </span>
-      </div>
-      <div class="actions">
-        <button class="btn btn-navy"
-          onclick="window.location
-            ='chat.html'">
-          💬 Chatta
-        </button>
-        <button class="btn btn-orange">
-          🔄 Byt förare
-        </button>
-        <button class="btn btn-red">
-          ✕ Avboka
-        </button>
-      </div>
-    </div>
-
-    <!-- BOOKING 2 - URGENT -->
-    <div class="booking-card urgent">
-      <div class="booking-top">
-        <span class="booking-id">
-          RES-003
-        </span>
-        <span class="badge badge-red">
-          Avbokn. förfrågan
-        </span>
-      </div>
-      <div class="booking-customer">
-        Ingrid Karlsson
-      </div>
-      <div class="booking-route">
-        📍 Lund C → 🏁 Malmö Airport
-      </div>
-      <div class="booking-footer">
-        <span class="booking-driver">
-          🚖 Lars Petersson
-        </span>
-        <span class="booking-fare">
-          215 kr
-        </span>
-      </div>
-      <div class="actions">
-        <button class="btn btn-green">
-          ✓ Godkänn avbokning
-        </button>
-        <button class="btn btn-navy">
-          ✕ Neka avbokning
-        </button>
-      </div>
-    </div>
-
-    <!-- WAITING BOOKINGS -->
-    <div class="section-title"
-         style="margin-top:20px">
-      Väntar på förare
-    </div>
-
-    <!-- BOOKING 3 -->
-    <div class="booking-card">
-      <div class="booking-top">
-        <span class="booking-id">
-          RES-002
-        </span>
-        <span class="badge badge-yellow">
-          Väntar
-        </span>
-      </div>
-      <div class="booking-customer">
-        Mohammed Ali
-      </div>
-      <div class="booking-route">
-        📍 Haga Nygata → 🏁 Liseberg
-      </div>
-      <div class="booking-footer">
-        <span class="booking-driver">
-          Ingen förare ännu
-        </span>
-        <span class="booking-fare">
-          145 kr
-        </span>
-      </div>
-      <div class="actions">
-        <button class="btn btn-green">
-          → Tilldela Erik
-        </button>
-        <button class="btn btn-blue">
-          → Tilldela Amina
-        </button>
+        Hämtar bokningar...
       </div>
     </div>
 
@@ -511,57 +394,298 @@
 
   </div>
 
-  <!-- BOTTOM NAVIGATION -->
-  <div class="bottom-nav">
+  <!-- TOAST -->
+  <div class="toast" id="toast"></div>
 
+  <!-- BOTTOM NAV -->
+  <div class="bottom-nav">
     <a href="dashboard.html"
        class="nav-item active">
       <span class="nav-icon">📋</span>
       <span>Bokningar</span>
     </a>
-
-    <a href="#"
-       class="nav-item">
+    <a href="#" class="nav-item">
       <span class="nav-icon">🗺️</span>
       <span>Karta</span>
     </a>
-
     <a href="drivers.html"
        class="nav-item">
       <span class="nav-icon">🚖</span>
       <span>Förare</span>
     </a>
-
     <a href="chat.html"
        class="nav-item">
       <span class="nav-icon">💬</span>
       <span>Chatt</span>
     </a>
-
     <a href="payment.html"
-   class="nav-item">
-  <span class="nav-icon">💳</span>
-  <span>Betalning</span>
-</a>
-
+       class="nav-item">
+      <span class="nav-icon">💳</span>
+      <span>Betalning</span>
+    </a>
   </div>
-<script>
-  // Check login
-  if (localStorage.getItem(
-    'waygo_logged_in') !== 'true') {
-    window.location.href =
-      'index.html';
-  }
 
-  // Logout function
-  function logout() {
-    localStorage.removeItem(
-      'waygo_logged_in');
-    localStorage.removeItem(
-      'waygo_user');
-    window.location.href =
-      'index.html';
-  }
-</script>
+  <script>
+
+    // ── YOUR API ADDRESS ──
+    const API = 'http://13.60.23.235:3000';
+
+    // ── CHECK LOGIN ──
+    if (localStorage.getItem(
+      'waygo_logged_in') !== 'true') {
+      window.location.href = 'index.html';
+    }
+
+    // ── LOGOUT ──
+    function logout() {
+      localStorage.removeItem(
+        'waygo_logged_in');
+      window.location.href = 'index.html';
+    }
+
+    // ── SHOW TOAST ──
+    function showToast(msg) {
+      const t = document.getElementById(
+        'toast');
+      t.textContent = msg;
+      t.classList.add('show');
+      setTimeout(() =>
+        t.classList.remove('show'), 3000);
+    }
+
+    // ── GET BADGE HTML ──
+    function getBadge(status) {
+      const badges = {
+        assigned: `<span class="badge
+          badge-green">Tilldelad</span>`,
+        pending: `<span class="badge
+          badge-yellow">Väntar</span>`,
+        cancelled: `<span class="badge
+          badge-red">Avbokad</span>`,
+      };
+      return badges[status] ||
+        `<span class="badge">${status}
+        </span>`;
+    }
+
+    // ── ASSIGN DRIVER ──
+    async function assignDriver(
+      bookingId, driverId, driverName) {
+      try {
+        const res = await fetch(
+          `${API}/bookings/${bookingId}/assign`,
+          {
+            method: 'PATCH',
+            headers: {
+              'Content-Type':
+                'application/json'
+            },
+            body: JSON.stringify({
+              driver_id: driverId
+            })
+          }
+        );
+        if (res.ok) {
+          showToast(
+            `✓ Tilldelad till ${driverName}`
+          );
+          loadDashboard();
+        }
+      } catch (err) {
+        showToast('⚠️ Fel vid tilldelning');
+      }
+    }
+
+    // ── CANCEL BOOKING ──
+    async function cancelBooking(id, ref) {
+      if (!confirm(
+        `Avboka ${ref}?`)) return;
+      try {
+        const res = await fetch(
+          `${API}/bookings/${id}/cancel`,
+          { method: 'PATCH' }
+        );
+        if (res.ok) {
+          showToast(`✓ ${ref} avbokad`);
+          loadDashboard();
+        }
+      } catch (err) {
+        showToast('⚠️ Fel vid avbokning');
+      }
+    }
+
+    // ── BUILD BOOKING CARD ──
+    function buildCard(b, drivers) {
+      const isUrgent = b.cancel_request;
+      const availableDrivers = drivers
+        .filter(d =>
+          d.status === 'available');
+
+      let assignButtons = '';
+      if (b.status === 'pending' &&
+          availableDrivers.length > 0) {
+        assignButtons = availableDrivers
+          .map(d => `
+            <button class="btn btn-green"
+              onclick="assignDriver(
+                ${b.id},
+                ${d.id},
+                '${d.name}')">
+              → ${d.name.split(' ')[0]}
+            </button>
+          `).join('');
+      }
+
+      return `
+        <div class="booking-card
+          ${isUrgent ? 'urgent' : ''}">
+          <div class="booking-top">
+            <span class="booking-id">
+              ${b.booking_ref}
+            </span>
+            ${getBadge(b.status)}
+          </div>
+          <div class="booking-customer">
+            ${b.customer_name}
+          </div>
+          <div class="booking-route">
+            📍 ${b.from_address}
+            → 🏁 ${b.to_address}
+          </div>
+          <div class="booking-footer">
+            <span class="booking-driver">
+              ${b.driver_name
+                ? '🚖 ' + b.driver_name
+                : 'Ingen förare ännu'}
+            </span>
+            <span class="booking-fare">
+              ${b.fare_sek} kr
+            </span>
+          </div>
+          <div class="actions">
+            ${assignButtons}
+            ${b.status !== 'cancelled'
+              ? `<button class="btn btn-red"
+                  onclick="cancelBooking(
+                    ${b.id},
+                    '${b.booking_ref}')">
+                  ✕ Avboka
+                </button>`
+              : ''}
+            <button class="btn btn-navy"
+              onclick="window.location
+                ='chat.html'">
+              💬 Chatta
+            </button>
+          </div>
+        </div>
+      `;
+    }
+
+    // ── LOAD DASHBOARD ──
+    async function loadDashboard() {
+      try {
+        // Fetch bookings and drivers
+        const [bRes, dRes] =
+          await Promise.all([
+            fetch(`${API}/bookings`),
+            fetch(`${API}/drivers`)
+          ]);
+
+        const bData = await bRes.json();
+        const dData = await dRes.json();
+
+        const bookings = bData.bookings;
+        const drivers = dData.drivers;
+
+        // Update stats
+        document.getElementById(
+          'statActive').textContent =
+          bookings.filter(b =>
+            b.status === 'assigned'
+          ).length;
+
+        document.getElementById(
+          'statPending').textContent =
+          bookings.filter(b =>
+            b.status === 'pending'
+          ).length;
+
+        document.getElementById(
+          'statDrivers').textContent =
+          drivers.filter(d =>
+            d.status === 'available'
+          ).length;
+
+        document.getElementById(
+          'statCancel').textContent =
+          bookings.filter(b =>
+            b.cancel_request
+          ).length;
+
+        // Build booking cards
+        const active = bookings.filter(
+          b => b.status === 'assigned');
+        const pending = bookings.filter(
+          b => b.status === 'pending');
+        const cancelled = bookings.filter(
+          b => b.status === 'cancelled');
+
+        let html = '';
+
+        if (active.length > 0) {
+          html += `<div class="section-title"
+            style="margin-top:0">
+            Aktiva resor</div>`;
+          html += active.map(b =>
+            buildCard(b, drivers)).join('');
+        }
+
+        if (pending.length > 0) {
+          html += `<div class="section-title">
+            Väntar på förare</div>`;
+          html += pending.map(b =>
+            buildCard(b, drivers)).join('');
+        }
+
+        if (cancelled.length > 0) {
+          html += `<div class="section-title">
+            Avbokade</div>`;
+          html += cancelled.map(b =>
+            buildCard(b, drivers)).join('');
+        }
+
+        if (bookings.length === 0) {
+          html = `<div class="loading-box">
+            Inga bokningar ännu</div>`;
+        }
+
+        document.getElementById(
+          'bookingsList').innerHTML = html;
+
+        // Hide error box
+        document.getElementById(
+          'errorBox').style.display = 'none';
+
+      } catch (err) {
+        // Show error
+        document.getElementById(
+          'errorBox').style.display = 'block';
+        document.getElementById(
+          'bookingsList').innerHTML =
+          `<div class="loading-box">
+            Kunde inte ladda bokningar.
+          </div>`;
+      }
+    }
+
+    // ── START ──
+    loadDashboard();
+
+    // ── AUTO REFRESH EVERY 30 SECONDS ──
+    setInterval(loadDashboard, 30000);
+
+  </script>
+
 </body>
 </html>

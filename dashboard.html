@@ -560,42 +560,117 @@
     </a>
   </div>
 
+ <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+
   <script>
-  <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
-<script>
-  const API = 'https://16.16.153.106.sslip.io';
-  const socket = io(API);
+    const API = 'https://16.16.153.106.sslip.io';
+    const socket = io(API);
 
-  socket.on('connect', () => {
-    socket.emit('central:join');
-    console.log('Connected to Waygo live');
-  });
+    // Socket Events
+    socket.on('connect', () => {
+      socket.emit('central:join');
+      console.log('Connected to Waygo live');
+    });
 
-  socket.on('driver:location', (data) => {
-    updateDriverOnMap(data.driverId, data.lat, data.lng);
-  });
+    socket.on('driver:location', (data) => {
+      updateDriverOnMap(data.driverId, data.lat, data.lng);
+    });
 
-  // ... (Paste the rest of your functions here, making sure there are NO '+' or '@@' symbols) ...
+    socket.on('booking:new', () => loadDashboard());
+    socket.on('booking:assigned', () => loadDashboard());
 
-  async function loadDashboard() {
-    try {
-      const [bRes, dRes] = await Promise.all([
-        fetch(`${API}/bookings`),
-        fetch(`${API}/drivers`)
-      ]);
-      const bData = await bRes.json();
-      const dData = await dRes.json();
-      
-      // FIX HERE: NO SPACE
-      addStaticDriversToMap(dData.drivers); 
-      
-      // ... rest of your UI update logic ...
-    } catch(err) { console.error(err); }
-  }
+    // --- MAP FUNCTIONS ---
+    function updateDriverOnMap(driverId, lat, lng) {
+      const map = document.getElementById('liveMap');
+      if (!map) return;
 
-  loadDashboard();
-</script>
+      const minLat = 59.2; const maxLat = 59.5;
+      const minLng = 17.8; const maxLng = 18.2;
+
+      const x = ((lng - minLng) / (maxLng - minLng)) * 90 + 5;
+      const y = ((maxLat - lat) / (maxLat - minLat)) * 90 + 5;
+
+      let dot = document.getElementById('mapDriver' + driverId);
+      if (!dot) {
+        dot = document.createElement('div');
+        dot.id = 'mapDriver' + driverId;
+        dot.className = 'map-driver-dot';
+        dot.innerHTML = '🚖';
+        map.appendChild(dot);
+      }
+      dot.style.left = x + '%';
+      dot.style.top = y + '%';
+
+      const count = map.querySelectorAll('.map-driver-dot').length;
+      document.getElementById('activeCount').textContent = count;
+    }
+
+    function addStaticDriversToMap(drivers) {
+      drivers.forEach(d => {
+        if (d.status !== 'offline') updateDriverOnMap(d.id, d.last_lat || 59.33, d.last_lng || 18.06);
+      });
+    }
+
+    // --- DATA LOADING ---
+    async function loadDashboard() {
+      try {
+        const [bRes, dRes] = await Promise.all([
+          fetch(`${API}/bookings`),
+          fetch(`${API}/drivers`)
+        ]);
+        const bData = await bRes.json();
+        const dData = await dRes.json();
+
+        const bookings = bData.bookings;
+        const drivers = dData.drivers;
+
+        // Update Stats
+        document.getElementById('statActive').textContent = bookings.filter(b => b.status === 'assigned').length;
+        document.getElementById('statPending').textContent = bookings.filter(b => b.status === 'pending').length;
+        document.getElementById('statDrivers').textContent = drivers.filter(d => d.status === 'available').length;
+        document.getElementById('statCancel').textContent = bookings.filter(b => b.cancel_request).length;
+
+        // Render Bookings
+        const list = document.getElementById('bookingsList');
+        if (bookings.length === 0) {
+          list.innerHTML = '<div class="loading-box">Inga bokningar just nu.</div>';
+        } else {
+          list.innerHTML = bookings.map(b => `
+            <div class="booking-card ${b.cancel_request ? 'urgent' : ''}">
+              <div class="booking-top">
+                <span class="booking-id">${b.booking_ref}</span>
+                <span class="badge ${b.status === 'pending' ? 'badge-yellow' : 'badge-green'}">${b.status}</span>
+              </div>
+              <div class="booking-customer">${b.customer_name}</div>
+              <div class="booking-route">📍 ${b.from_address}</div>
+              <div class="booking-footer">
+                <span class="booking-driver">🚖 ${b.driver_name || 'Väntar...'}</span>
+                <span class="booking-fare">${b.fare_sek} kr</span>
+              </div>
+            </div>
+          `).join('');
+        }
+
+        addStaticDriversToMap(drivers);
+        document.getElementById('errorBox').style.display = 'none';
+      } catch (err) {
+        console.error(err);
+        document.getElementById('errorBox').style.display = 'block';
+      }
+    }
+
+    // --- AUTH & LOGOUT ---
+    if (localStorage.getItem('waygo_logged_in') !== 'true') {
+      window.location.href = 'index.html';
+    }
+
+    function logout() {
+      localStorage.removeItem('waygo_logged_in');
+      window.location.href = 'index.html';
+    }
+
+    loadDashboard();
+    setInterval(loadDashboard, 30000);
   </script>
-
 </body>
 </html>

@@ -307,7 +307,112 @@
     .nav-item.active { color: #fbbf24; }
     .nav-icon { font-size: 20px; }
     .bottom-space { height: 80px; }
+/* ── LIVE MAP ── */
+.map-container {
+  background: #d4e8d4;
+  border-radius: 12px;
+  height: 200px;
+  position: relative;
+  overflow: hidden;
+  margin-bottom: 20px;
+  border: 1px solid #d0d7ea;
+}
 
+.map-bg {
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(
+      #b8d4b8 1px, transparent 1px),
+    linear-gradient(90deg,
+      #b8d4b8 1px, transparent 1px);
+  background-size: 25px 25px;
+  opacity: 0.5;
+}
+
+.map-road-h {
+  position: absolute;
+  height: 5px;
+  background: white;
+  left: 0; right: 0;
+  opacity: 0.8;
+}
+
+.map-road-v {
+  position: absolute;
+  width: 5px;
+  background: white;
+  top: 0; bottom: 0;
+  opacity: 0.8;
+}
+
+.map-driver-dot {
+  position: absolute;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: #0d1b3e;
+  border: 3px solid #fbbf24;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  transform: translate(-50%, -50%);
+  transition: left 1s ease,
+              top 1s ease;
+  box-shadow: 0 2px 8px
+    rgba(0,0,0,0.3);
+  cursor: pointer;
+}
+
+.map-driver-dot.available {
+  background: #15803d;
+  border-color: white;
+}
+
+.map-driver-dot.offline {
+  background: #64748b;
+  border-color: white;
+  opacity: 0.6;
+}
+
+.map-label-tag {
+  position: absolute;
+  background: rgba(0,0,0,0.7);
+  color: white;
+  font-size: 9px;
+  padding: 2px 6px;
+  border-radius: 8px;
+  white-space: nowrap;
+  transform: translateX(-50%);
+  top: 100%;
+  left: 50%;
+  margin-top: 2px;
+}
+
+.map-info {
+  position: absolute;
+  bottom: 8px;
+  left: 8px;
+  background: rgba(255,255,255,0.9);
+  border-radius: 8px;
+  padding: 4px 10px;
+  font-size: 11px;
+  color: #0d1b3e;
+  font-weight: bold;
+}
+
+.map-live-badge {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: #0d1b3e;
+  color: #fbbf24;
+  border-radius: 8px;
+  padding: 4px 10px;
+  font-size: 11px;
+  font-weight: bold;
+}
   </style>
 </head>
 
@@ -334,7 +439,37 @@
 
   <div class="page">
 
-    <!-- STATS -->
+    <!-- STATS --><!-- LIVE MAP -->
+<div class="section-title"
+     style="margin-top:0">
+  🗺️ Live förarkarta
+</div>
+
+<div class="map-container"
+     id="liveMap">
+  <div class="map-bg"></div>
+
+  <!-- Roads -->
+  <div class="map-road-h"
+       style="top:30%"></div>
+  <div class="map-road-h"
+       style="top:60%"></div>
+  <div class="map-road-v"
+       style="left:25%"></div>
+  <div class="map-road-v"
+       style="left:55%"></div>
+  <div class="map-road-v"
+       style="left:80%"></div>
+
+  <div class="map-info">
+    📍 Live · <span id="activeCount">
+      0
+    </span> fordon aktiva
+  </div>
+  <div class="map-live-badge">
+    ⬤ LIVE
+  </div>
+</div>
     <div class="stats-grid">
       <div class="stat-card">
         <div class="stat-number green"
@@ -426,10 +561,143 @@
   </div>
 
   <script>
+  <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
 
     // ── YOUR API ADDRESS ──
     const API = 'https://16.16.153.106.sslip.io';
+// ── SOCKET.IO CONNECTION ──
+const socket = io(API);
 
+// Join central room
+socket.on('connect', () => {
+  socket.emit('central:join');
+  console.log('Connected to Waygo live');
+});
+
+// Driver positions on map
+const mapDrivers = {};
+
+socket.on('driver:location', (data) => {
+  const { driverId, lat, lng } = data;
+  updateDriverOnMap(driverId, lat, lng);
+});
+
+// New booking arrives
+socket.on('booking:new', (booking) => {
+  showToast('🚖 Ny bokning: '
+    + booking.booking_ref);
+  loadDashboard();
+});
+
+// Booking assigned
+socket.on('booking:assigned', () => {
+  loadDashboard();
+});
+
+// Booking cancelled
+socket.on('booking:cancelled', () => {
+  loadDashboard();
+});
+
+// Cancel request from customer
+socket.on('booking:cancelRequest',
+  (data) => {
+  showToast('⚠️ Avbokningsförfrågan: '
+    + data.customerName);
+  loadDashboard();
+});
+
+// ── MAP FUNCTIONS ──
+function updateDriverOnMap(
+  driverId, lat, lng) {
+
+  const map = document.getElementById(
+    'liveMap');
+  if (!map) return;
+
+  // Convert GPS to map percentage
+  // Stockholm area bounds
+  const minLat = 59.2;
+  const maxLat = 59.5;
+  const minLng = 17.8;
+  const maxLng = 18.2;
+
+  const x = ((lng - minLng) /
+    (maxLng - minLng)) * 90 + 5;
+  const y = ((maxLat - lat) /
+    (maxLat - minLat)) * 90 + 5;
+
+  let dot = document.getElementById(
+    'mapDriver' + driverId);
+
+  if (!dot) {
+    dot = document.createElement('div');
+    dot.id = 'mapDriver' + driverId;
+    dot.className = 'map-driver-dot';
+    dot.innerHTML = '🚖';
+    dot.title = 'Förare ' + driverId;
+    map.appendChild(dot);
+  }
+
+  dot.style.left = x + '%';
+  dot.style.top = y + '%';
+
+  // Update active count
+  const count = map.querySelectorAll(
+    '.map-driver-dot').length;
+  const countEl = document.getElementById(
+    'activeCount');
+  if (countEl) countEl.textContent = count;
+}
+
+function addStaticDriversToMap(drivers) {
+  drivers.forEach((d, i) => {
+    if (d.status === 'offline') return;
+
+    const positions = [
+      { x: 45, y: 35 },
+      { x: 25, y: 60 },
+      { x: 70, y: 65 },
+    ];
+
+    const pos = positions[i] ||
+      { x: 50, y: 50 };
+
+    const map = document.getElementById(
+      'liveMap');
+    if (!map) return;
+
+    let dot = document.getElementById(
+      'mapDriver' + d.id);
+
+    if (!dot) {
+      dot = document.createElement('div');
+      dot.id = 'mapDriver' + d.id;
+      dot.className = 'map-driver-dot '
+        + d.status;
+
+      const label = document.createElement(
+        'span');
+      label.className = 'map-label-tag';
+      label.textContent =
+        d.name.split(' ')[0];
+
+      dot.innerHTML = d.status === 'busy'
+        ? '🚖' : '🚕';
+      dot.appendChild(label);
+      map.appendChild(dot);
+    }
+
+    dot.style.left = pos.x + '%';
+    dot.style.top = pos.y + '%';
+  });
+
+  const active = drivers.filter(
+    d => d.status !== 'offline').length;
+  const countEl = document.getElementById(
+    'activeCount');
+  if (countEl) countEl.textContent = active;
+}
     // ── CHECK LOGIN ──
     if (localStorage.getItem(
       'waygo_logged_in') !== 'true') {
@@ -597,6 +865,7 @@
 
         const bookings = bData.bookings;
         const drivers = dData.drivers;
+        addStaticDrivers ToMap(drivers);
 
         // Update stats
         document.getElementById(

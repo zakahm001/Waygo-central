@@ -2,457 +2,804 @@
 <html lang="sv">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport"
-        content="width=device-width,
-        initial-scale=1.0">
-  <title>Waygo Central — Dashboard</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Waygo — Central Dispatch</title>
   <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
   <style>
-    * { margin:0; padding:0; box-sizing:border-box; }
-    body { background:#eef1f8; font-family:Arial,sans-serif; min-height:100vh; }
+    *{margin:0;padding:0;box-sizing:border-box}
+    body{font-family:Arial,sans-serif;background:#eef1f8;color:#0d1b3e;min-height:100vh}
 
-    .topbar {
-      background:#0d1b3e; padding:16px 20px;
-      display:flex; justify-content:space-between;
-      align-items:center; position:sticky; top:0; z-index:100;
-    }
-    .topbar-left { display:flex; align-items:center; gap:10px; }
-    .logo-text { color:#fbbf24; font-size:20px; font-weight:bold; }
-    .live-dot {
-      width:8px; height:8px; background:#22c55e;
-      border-radius:50%; animation:pulse 2s infinite;
-    }
-    @keyframes pulse {
-      0%{opacity:1} 50%{opacity:0.3} 100%{opacity:1}
-    }
-    .live-text { color:#4a6090; font-size:12px; }
+    /* NAV */
+    .navbar{background:#0d1b3e;padding:0 20px;display:flex;align-items:center;
+      justify-content:space-between;height:56px;border-bottom:1px solid #1a2f5e;
+      position:sticky;top:0;z-index:200}
+    .nav-logo{color:#fbbf24;font-size:18px;font-weight:bold}
+    .nav-live{display:flex;align-items:center;gap:6px;font-size:12px;color:#22c55e;font-weight:700}
+    .nav-live-dot{width:8px;height:8px;border-radius:50%;background:#22c55e;animation:pulse 2s infinite}
+    @keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+    .nav-right{display:flex;align-items:center;gap:12px}
+    .nav-user{color:#4a6090;font-size:13px}
+    .nav-logout{color:#4a6090;font-size:12px;cursor:pointer;background:none;border:none;padding:4px}
 
-    .page { padding:20px; }
+    /* BOTTOM NAV (mobile) */
+    .bnav{position:fixed;bottom:0;left:0;right:0;background:#0d1b3e;
+      display:flex;justify-content:space-around;padding:10px 0;
+      border-top:1px solid #1a2f5e;z-index:100}
+    .bni{display:flex;flex-direction:column;align-items:center;gap:3px;
+      color:#4a6090;font-size:10px;cursor:pointer;border:none;background:none;
+      text-decoration:none;padding:4px 8px}
+    .bni.on{color:#fbbf24}
+    .bni-icon{font-size:20px}
+    .bspace{height:80px}
 
-    .stats-grid {
-      display:grid; grid-template-columns:1fr 1fr;
-      gap:12px; margin-bottom:24px;
-    }
-    .stat-card {
-      background:white; border-radius:12px; padding:16px;
-      border:1px solid #d0d7ea; text-align:center;
-    }
-    .stat-number { font-size:36px; font-weight:bold; line-height:1; margin-bottom:4px; }
-    .stat-label { font-size:11px; color:#64748b; text-transform:uppercase; letter-spacing:1px; }
-    .green{color:#15803d} .orange{color:#d97706}
-    .blue{color:#1a56db} .red{color:#dc2626}
+    /* ALERT BANNER */
+    .alert-banner{padding:12px 20px;font-size:13px;font-weight:700;
+      display:none;align-items:center;justify-content:space-between}
+    .alert-banner.show{display:flex}
+    .alert-success{background:#dcfce7;color:#15803d;border-bottom:1px solid #86efac}
+    .alert-info{background:#dbeafe;color:#1a56db;border-bottom:1px solid #93c5fd}
+    .alert-warning{background:#fef3c7;color:#d97706;border-bottom:1px solid #fde68a}
+    .alert-close{background:none;border:none;cursor:pointer;font-size:16px;color:inherit}
 
-    .section-title {
-      font-size:11px; font-weight:bold; color:#64748b;
-      text-transform:uppercase; letter-spacing:1.5px;
-      margin-bottom:10px; margin-top:20px;
-    }
+    /* PAGE */
+    .page{padding:16px;padding-bottom:90px}
 
-    .booking-card {
-      background:white; border-radius:12px; padding:16px;
-      margin-bottom:10px; border:1px solid #d0d7ea;
-    }
-    .booking-card.urgent {
-      border-color:#f97316; box-shadow:0 0 0 3px #fed7aa;
-    }
-    .booking-top {
-      display:flex; justify-content:space-between;
-      align-items:center; margin-bottom:8px;
-    }
-    .booking-id { color:#1a56db; font-weight:bold; font-size:13px; }
-    .badge { padding:3px 10px; border-radius:20px; font-size:11px; font-weight:bold; }
-    .badge-green { background:#dcfce7; color:#15803d; border:1px solid #bbf7d0; }
-    .badge-yellow { background:#fef3c7; color:#d97706; border:1px solid #fde68a; }
-    .badge-red { background:#fee2e2; color:#dc2626; border:1px solid #fecaca; }
-    .booking-customer { font-size:14px; font-weight:600; color:#0d1b3e; margin-bottom:2px; }
-    .booking-route { font-size:12px; color:#64748b; margin-bottom:8px; }
-    .booking-footer { display:flex; justify-content:space-between; align-items:center; }
-    .booking-driver { font-size:12px; color:#64748b; }
-    .booking-fare { font-size:14px; font-weight:bold; color:#0d1b3e; }
-    .actions { display:flex; gap:8px; margin-top:10px; flex-wrap:wrap; }
-    .btn { padding:7px 14px; border-radius:8px; font-size:12px; font-weight:bold; border:none; cursor:pointer; }
-    .btn-navy { background:#0d1b3e; color:#fbbf24; }
-    .btn-green { background:#15803d; color:white; }
-    .btn-red { background:#dc2626; color:white; }
+    /* STATS */
+    .stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px}
+    .stat-card{background:white;border-radius:12px;padding:14px 12px;
+      border:1px solid #d0d7ea;text-align:center}
+    .stat-val{font-size:22px;font-weight:800;color:#0d1b3e}
+    .stat-lbl{font-size:10px;color:#64748b;text-transform:uppercase;letter-spacing:1px;margin-top:2px}
 
-    .loading-box { text-align:center; padding:40px 20px; color:#64748b; }
-    .loading-spinner { font-size:36px; animation:spin 1s linear infinite; display:block; margin-bottom:12px; }
-    @keyframes spin { from{transform:rotate(0deg)} to{transform:rotate(360deg)} }
+    /* CARDS */
+    .card{background:white;border-radius:14px;padding:18px;margin-bottom:14px;
+      border:1px solid #d0d7ea;box-shadow:0 1px 4px rgba(0,0,0,.06)}
+    .stitle{font-size:10px;font-weight:700;color:#64748b;text-transform:uppercase;
+      letter-spacing:1.5px;margin-bottom:12px}
 
-    .error-box {
-      background:#fee2e2; border:1px solid #fecaca;
-      border-radius:12px; padding:16px; text-align:center;
-      color:#dc2626; font-size:13px; margin-bottom:16px; display:none;
-    }
+    /* BOOKING CARDS */
+    .bcard{background:white;border-radius:12px;padding:14px;margin-bottom:10px;
+      border:1px solid #d0d7ea}
+    .bcard.pending{border-color:#d97706;box-shadow:0 0 0 3px #fef3c7}
+    .bcard.assigned{border-color:#1a56db;box-shadow:0 0 0 3px #dbeafe}
+    .bcard.completed{border-color:#15803d;box-shadow:0 0 0 3px #dcfce7}
+    .bcard.cancelled{opacity:.7}
+    .btop{display:flex;justify-content:space-between;align-items:center;
+      margin-bottom:8px;flex-wrap:wrap;gap:4px}
+    .bref{font-size:13px;font-weight:700;color:#1a56db}
+    .broute{font-size:13px;font-weight:600;color:#0d1b3e;margin-bottom:4px}
+    .bdetail{font-size:11px;color:#64748b;margin-bottom:10px}
+    .bactions{display:flex;gap:8px;flex-wrap:wrap}
 
-    .toast {
-      position:fixed; bottom:90px; left:20px; right:20px;
-      background:#0d1b3e; color:#fbbf24; padding:14px 20px;
-      border-radius:12px; font-size:14px; font-weight:bold;
-      text-align:center; z-index:300; display:none;
-    }
-    .toast.show { display:block; }
+    /* BADGES */
+    .badge{padding:3px 10px;border-radius:20px;font-size:11px;font-weight:700;white-space:nowrap}
+    .b-pending{background:#fef3c7;color:#d97706;border:1px solid #fde68a}
+    .b-assigned{background:#dbeafe;color:#1a56db;border:1px solid #93c5fd}
+    .b-completed{background:#dcfce7;color:#15803d;border:1px solid #86efac}
+    .b-cancelled{background:#f1f5f9;color:#64748b;border:1px solid #e2e8f0}
+    .b-purple{background:#ede9fe;color:#7c3aed;border:1px solid #ddd6fe}
 
-    /* ── LIVE MAP ── */
-    .map-container {
-      background:#d4e8d4; border-radius:12px; height:200px;
-      position:relative; overflow:hidden; margin-bottom:20px;
-      border:1px solid #d0d7ea;
-    }
-    .map-bg {
-      position:absolute; inset:0;
-      background-image:
-        linear-gradient(#b8d4b8 1px, transparent 1px),
-        linear-gradient(90deg, #b8d4b8 1px, transparent 1px);
-      background-size:25px 25px; opacity:0.5;
-    }
-    .map-road-h { position:absolute; height:5px; background:white; left:0; right:0; opacity:0.8; }
-    .map-road-v { position:absolute; width:5px; background:white; top:0; bottom:0; opacity:0.8; }
-    .map-driver-dot {
-      position:absolute; width:36px; height:36px;
-      border-radius:50%; background:#0d1b3e; border:3px solid #fbbf24;
-      display:flex; align-items:center; justify-content:center;
-      font-size:16px; transform:translate(-50%,-50%);
-      transition:left 1s ease, top 1s ease;
-      box-shadow:0 2px 8px rgba(0,0,0,0.3); cursor:pointer;
-    }
-    .map-driver-dot.available { background:#15803d; border-color:white; }
-    .map-driver-dot.offline { background:#64748b; border-color:white; opacity:0.6; }
-    .map-label-tag {
-      position:absolute; background:rgba(0,0,0,0.7); color:white;
-      font-size:9px; padding:2px 6px; border-radius:8px;
-      white-space:nowrap; top:100%; left:50%;
-      transform:translateX(-50%); margin-top:2px;
-    }
-    .map-info {
-      position:absolute; bottom:8px; left:8px;
-      background:rgba(255,255,255,0.9); border-radius:8px;
-      padding:4px 10px; font-size:11px; color:#0d1b3e; font-weight:bold;
-    }
-    .map-live-badge {
-      position:absolute; top:8px; right:8px; background:#0d1b3e;
-      color:#fbbf24; border-radius:8px; padding:4px 10px;
-      font-size:11px; font-weight:bold;
-    }
+    /* BUTTONS */
+    .btn{padding:10px 16px;border-radius:8px;font-size:13px;font-weight:700;
+      border:none;cursor:pointer;text-align:center}
+    .btn:disabled{opacity:.5;cursor:default}
+    .btn-primary{background:#0d1b3e;color:#fbbf24}
+    .btn-success{background:#15803d;color:white}
+    .btn-danger{background:#dc2626;color:white}
+    .btn-gray{background:#f1f5f9;color:#64748b}
+    .btn-teal{background:#0d9488;color:white}
+    .btn-blue{background:#1a56db;color:white}
+    .btn-sm{padding:7px 12px;font-size:12px}
 
-    .bottom-nav {
-      position:fixed; bottom:0; left:0; right:0; background:#0d1b3e;
-      display:flex; justify-content:space-around; padding:12px 0;
-      border-top:1px solid #1a2f5e;
-    }
-    .nav-item {
-      display:flex; flex-direction:column; align-items:center;
-      gap:4px; color:#4a6090; font-size:10px;
-      cursor:pointer; text-decoration:none;
-    }
-    .nav-item.active { color:#fbbf24; }
-    .nav-icon { font-size:20px; }
-    .bottom-space { height:80px; }
+    /* DRIVER SELECT */
+    .driver-select{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px}
+    .driver-btn{padding:7px 12px;border-radius:20px;border:2px solid #d0d7ea;
+      background:white;color:#0d1b3e;font-size:12px;font-weight:700;cursor:pointer}
+    .driver-btn:hover{border-color:#0d1b3e;background:#0d1b3e;color:#fbbf24}
+    .driver-btn.available{border-color:#15803d;color:#15803d}
+    .driver-btn.busy{border-color:#d97706;color:#d97706;opacity:.6;cursor:not-allowed}
+
+    /* MINI MAP */
+    .mmap{background:#d4e8d4;border-radius:10px;height:200px;position:relative;
+      overflow:hidden;margin-bottom:14px;border:1px solid #b8d4b8}
+    .mmap-bg{position:absolute;inset:0;
+      background-image:linear-gradient(#b8d4b8 1px,transparent 1px),
+      linear-gradient(90deg,#b8d4b8 1px,transparent 1px);
+      background-size:25px 25px;opacity:.5}
+    .mroad-h{position:absolute;height:5px;background:white;left:0;right:0;opacity:.8}
+    .mroad-v{position:absolute;width:5px;background:white;top:0;bottom:0;opacity:.8}
+    .dmap-marker{position:absolute;width:36px;height:36px;border-radius:50%;
+      background:#0d1b3e;border:3px solid #fbbf24;display:flex;align-items:center;
+      justify-content:center;font-size:16px;transform:translate(-50%,-50%);
+      transition:left 2s ease,top 2s ease;box-shadow:0 2px 8px rgba(0,0,0,.3)}
+    .dmap-label{position:absolute;background:#0d1b3e;color:#fbbf24;
+      font-size:9px;font-weight:700;padding:2px 5px;border-radius:4px;
+      transform:translateX(-50%);white-space:nowrap}
+    .map-live-badge{position:absolute;top:8px;left:8px;background:rgba(13,27,62,.9);
+      color:#fbbf24;border-radius:6px;padding:4px 10px;font-size:11px;font-weight:bold}
+
+    /* MODAL */
+    .moverlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);
+      z-index:300;align-items:flex-end;justify-content:center}
+    .moverlay.open{display:flex}
+    .mbox{background:white;border-radius:20px 20px 0 0;padding:24px 20px;
+      width:100%;max-width:500px;max-height:88vh;overflow-y:auto}
+    .mtitle{font-size:17px;font-weight:bold;color:#0d1b3e;margin-bottom:16px}
+    .minfo{background:#f0f3f9;border-radius:10px;padding:12px 14px;
+      font-size:13px;color:#64748b;margin-bottom:14px;line-height:1.8}
+    .minfo strong{color:#0d1b3e}
+    .mbtns{display:flex;gap:10px}
+    .mbtn{flex:1;padding:14px;border-radius:10px;font-size:14px;font-weight:bold;border:none;cursor:pointer}
+
+    /* CHAT */
+    .chatbox{height:200px;overflow-y:auto;padding:8px 0;
+      display:flex;flex-direction:column;gap:8px;margin-bottom:10px}
+    .cmsg{display:flex;gap:8px;align-items:flex-end}
+    .cmsg.mine{flex-direction:row-reverse}
+    .cav{width:28px;height:28px;border-radius:50%;background:#0d1b3e;color:#fbbf24;
+      display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:bold;flex-shrink:0}
+    .cav.drv{background:#1a56db}
+    .cav.cus{background:#0d9488}
+    .cbubble{max-width:72%;padding:8px 12px;border-radius:12px;font-size:13px;line-height:1.4}
+    .cmsg.mine .cbubble{background:#0d1b3e;color:#fbbf24;border-radius:12px 12px 4px 12px}
+    .cmsg.other .cbubble{background:#f1f5f9;color:#0d1b3e;border-radius:12px 12px 12px 4px}
+    .cinrow{display:flex;gap:8px}
+    .cin{flex:1;padding:9px 12px;border-radius:24px;border:1px solid #d0d7ea;
+      background:#f8fafc;font-size:13px;color:#0d1b3e;outline:none}
+    .csend{width:38px;height:38px;border-radius:50%;background:#0d1b3e;border:none;
+      color:#fbbf24;font-size:15px;cursor:pointer;flex-shrink:0}
+
+    /* TABS */
+    .tabbar{display:flex;background:white;border-bottom:1px solid #d0d7ea;padding:0 16px;
+      position:sticky;top:56px;z-index:100}
+    .tab{flex:1;padding:13px 8px;text-align:center;font-size:13px;font-weight:500;
+      color:#64748b;cursor:pointer;border-bottom:2.5px solid transparent;
+      background:none;border-top:none;border-left:none;border-right:none}
+    .tab.on{color:#0d1b3e;font-weight:700;border-bottom-color:#0d1b3e}
+
+    /* DRIVER CARD */
+    .drv-card{background:white;border-radius:12px;padding:14px;margin-bottom:10px;
+      border:1px solid #d0d7ea;display:flex;align-items:center;gap:12px}
+    .drv-avatar{width:44px;height:44px;border-radius:50%;background:#0d1b3e;
+      color:#fbbf24;display:flex;align-items:center;justify-content:center;
+      font-size:18px;font-weight:bold;flex-shrink:0}
+    .drv-status-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+    .dot-available{background:#22c55e}
+    .dot-busy{background:#f97316}
+    .dot-offline{background:#64748b}
+
+    /* TOAST */
+    .toast{position:fixed;top:70px;left:20px;right:20px;background:#0d1b3e;
+      color:#fbbf24;padding:14px 20px;border-radius:12px;font-size:14px;
+      font-weight:bold;text-align:center;z-index:999;display:none;
+      box-shadow:0 4px 20px rgba(0,0,0,.3)}
+    .toast.show{display:block}
+
+    /* FORM */
+    .flabel{font-size:11px;font-weight:700;color:#64748b;text-transform:uppercase;
+      letter-spacing:1px;margin-bottom:5px;display:block}
+    .finput{width:100%;padding:10px 14px;border-radius:8px;border:1px solid #d0d7ea;
+      background:#f8fafc;color:#0d1b3e;font-size:14px;outline:none;
+      box-sizing:border-box;margin-bottom:12px}
+    .finput:focus{border-color:#0d1b3e}
+
+    /* EMPTY STATE */
+    .empty{text-align:center;padding:40px 20px;color:#94a3b8;font-size:14px}
+    .empty-icon{font-size:48px;margin-bottom:12px}
+
+    /* INFO */
+    .ib{border-radius:8px;padding:10px 12px;font-size:12px;margin-bottom:10px}
+    .ib-blue{background:#dbeafe;border:1px solid #93c5fd;color:#1a56db}
+    .ib-green{background:#dcfce7;border:1px solid #86efac;color:#15803d}
+    .ib-yellow{background:#fef3c7;border:1px solid #fde68a;color:#d97706}
+    .ib-red{background:#fee2e2;border:1px solid #fecaca;color:#dc2626}
   </style>
 </head>
 <body>
 
-  <!-- TOP BAR -->
-  <div class="topbar">
-    <div class="topbar-left">
-      <span class="logo-text">▲ WAYGO</span>
-      <div class="live-dot"></div>
-      <span class="live-text">LIVE</span>
-    </div>
-    <button onclick="logout()"
-      style="background:#1a2f5e;color:#94a3b8;
-      border:none;border-radius:8px;
-      padding:8px 14px;font-size:12px;cursor:pointer;">
-      Logga ut
-    </button>
+<!-- NAVBAR -->
+<div class="navbar">
+  <div class="nav-logo">▲ WAYGO</div>
+  <div class="nav-live">
+    <div class="nav-live-dot"></div>
+    LIVE
   </div>
-
-  <div class="page">
-
-    <!-- LIVE MAP -->
-    <div class="section-title" style="margin-top:0">
-      🗺️ Live förarkarta
-    </div>
-    <div class="map-container" id="liveMap">
-      <div class="map-bg"></div>
-      <div class="map-road-h" style="top:30%"></div>
-      <div class="map-road-h" style="top:60%"></div>
-      <div class="map-road-v" style="left:25%"></div>
-      <div class="map-road-v" style="left:55%"></div>
-      <div class="map-road-v" style="left:80%"></div>
-      <div class="map-info">
-        📍 Live · <span id="activeCount">0</span> fordon aktiva
-      </div>
-      <div class="map-live-badge">⬤ LIVE</div>
-    </div>
-
-    <!-- STATS -->
-    <div class="stats-grid">
-      <div class="stat-card">
-        <div class="stat-number green" id="statActive">—</div>
-        <div class="stat-label">Aktiva resor</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-number orange" id="statPending">—</div>
-        <div class="stat-label">Väntar</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-number blue" id="statDrivers">—</div>
-        <div class="stat-label">Lediga förare</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-number red" id="statCancel">—</div>
-        <div class="stat-label">Avbokn. förfrågan</div>
-      </div>
-    </div>
-
-    <!-- ERROR BOX -->
-    <div class="error-box" id="errorBox">
-      ⚠️ Kunde inte ansluta till servern.
-    </div>
-
-    <!-- BOOKINGS -->
-    <div class="section-title">Aktiva bokningar</div>
-    <div id="bookingsList">
-      <div class="loading-box">
-        <span class="loading-spinner">⟳</span>
-        Hämtar bokningar...
-      </div>
-    </div>
-
-    <div class="bottom-space"></div>
+  <div class="nav-right">
+    <span class="nav-user" id="navUser">Central</span>
+    <button class="nav-logout" onclick="logout()">Logga ut</button>
   </div>
+</div>
 
-  <!-- TOAST -->
-  <div class="toast" id="toast"></div>
+<!-- ALERT BANNER -->
+<div class="alert-banner" id="alertBanner">
+  <span id="alertText"></span>
+  <button class="alert-close" onclick="hideAlert()">✕</button>
+</div>
 
-  <!-- BOTTOM NAV -->
-  <div class="bottom-nav">
-    <a href="dashboard.html" class="nav-item active">
-      <span class="nav-icon">📋</span><span>Bokningar</span>
-    </a>
-<a href="#" class="nav-item"
-   onclick="alert('Karta kommer snart! Använd minikartan på dashboard.')">
-  <span class="nav-icon">🗺️</span>
-  <span>Karta</span>
-</a>
-    <a href="drivers.html" class="nav-item">
-      <span class="nav-icon">🚖</span><span>Förare</span>
-    </a>
-    <a href="chat.html" class="nav-item">
-      <span class="nav-icon">💬</span><span>Chatt</span>
-    </a>
-    <a href="payment.html" class="nav-item">
-      <span class="nav-icon">💳</span><span>Betalning</span>
-    </a>
+<!-- TAB BAR -->
+<div class="tabbar">
+  <button class="tab on" id="tab0" onclick="showTab(0)">📋 Bokningar</button>
+  <button class="tab" id="tab1" onclick="showTab(1)">🗺️ Karta</button>
+  <button class="tab" id="tab2" onclick="showTab(2)">🚖 Förare</button>
+  <button class="tab" id="tab3" onclick="showTab(3)">💬 Chatt</button>
+</div>
+
+<!-- TAB CONTENT -->
+<div id="tabContent"></div>
+
+<!-- ASSIGN MODAL -->
+<div class="moverlay" id="assignModal" onclick="closeMIfOut(event,'assignModal')">
+  <div class="mbox">
+    <div class="mtitle">🚖 Tilldela förare</div>
+    <div class="minfo" id="assignInfo"></div>
+    <div class="stitle">Välj tillgänglig förare</div>
+    <div id="assignDriverList"></div>
+    <button class="mbtn btn-gray" style="width:100%;margin-top:10px" onclick="closeMod('assignModal')">Avbryt</button>
   </div>
+</div>
 
-  <script>
-    const API = 'https://16.16.153.106.sslip.io';
+<!-- CANCEL MODAL -->
+<div class="moverlay" id="cancelModal" onclick="closeMIfOut(event,'cancelModal')">
+  <div class="mbox">
+    <div class="mtitle">Bekräfta avbokning</div>
+    <div class="ib ib-red">⚠️ Denna åtgärd kan inte ångras. Föraren frigörs och kunden notifieras.</div>
+    <div class="minfo" id="cancelInfo"></div>
+    <div class="mbtns">
+      <button class="mbtn" style="background:#f1f5f9;color:#64748b" onclick="closeMod('cancelModal')">Avbryt</button>
+      <button class="mbtn" style="background:#dc2626;color:white" onclick="doCancel()">Avboka</button>
+    </div>
+  </div>
+</div>
 
-    // Check login
-    if (localStorage.getItem('waygo_logged_in') !== 'true') {
-      window.location.href = 'index.html';
-    }
+<!-- CHAT MODAL -->
+<div class="moverlay" id="chatModal" onclick="closeMIfOut(event,'chatModal')">
+  <div class="mbox">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
+      <div class="mtitle" id="chatTitle" style="margin-bottom:0">Chatt</div>
+      <button onclick="closeMod('chatModal')" style="background:none;border:none;font-size:22px;cursor:pointer;color:#64748b">✕</button>
+    </div>
+    <div class="chatbox" id="chatMessages"></div>
+    <div class="cinrow">
+      <input class="cin" id="chatInput" placeholder="Skriv meddelande..." onkeydown="if(event.key==='Enter')sendChat()"/>
+      <button class="csend" onclick="sendChat()">➤</button>
+    </div>
+  </div>
+</div>
 
-    function logout() {
-      localStorage.removeItem('waygo_logged_in');
-      window.location.href = 'index.html';
-    }
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
 
-    function showToast(msg) {
-      const t = document.getElementById('toast');
-      t.textContent = msg;
-      t.classList.add('show');
-      setTimeout(() => t.classList.remove('show'), 3000);
-    }
+<script>
+const API = 'https://16.16.153.106.sslip.io';
+const CENTRAL_USER = { email: 'central@waygo.se', password: 'waygo123', name: 'Central Dispatch' };
 
-    function getBadge(status) {
-      const badges = {
-        assigned: '<span class="badge badge-green">Tilldelad</span>',
-        pending:  '<span class="badge badge-yellow">Väntar</span>',
-        cancelled:'<span class="badge badge-red">Avbokad</span>',
-      };
-      return badges[status] || '<span class="badge">' + status + '</span>';
-    }
+let allBookings = [];
+let allDrivers = [];
+let curTab = 0;
+let assignBookingId = null;
+let assignBookingRef = null;
+let cancelBookingId = null;
+let cancelBookingRef = null;
+let currentChatKey = null;
+let socket = null;
+let driverPositions = {};
+let refreshInterval = null;
+let isLoggedIn = false;
 
-    async function assignDriver(bookingId, driverId, driverName) {
-      try {
-        const res = await fetch(API + '/bookings/' + bookingId + '/assign', {
-          method: 'PATCH',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ driver_id: driverId })
-        });
-        if (res.ok) {
-          showToast('✓ Tilldelad till ' + driverName);
-          loadDashboard();
-        }
-      } catch (err) {
-        showToast('⚠️ Fel vid tilldelning');
-      }
-    }
+// CHECK LOGIN
+function checkLogin() {
+  const loggedIn = localStorage.getItem('waygo_central_auth');
+  if (!loggedIn) {
+    showLoginScreen();
+    return false;
+  }
+  isLoggedIn = true;
+  return true;
+}
 
-    async function cancelBooking(id, ref) {
-      if (!confirm('Avboka ' + ref + '?')) return;
-      try {
-        const res = await fetch(API + '/bookings/' + id + '/cancel', {
-          method: 'PATCH'
-        });
-        if (res.ok) {
-          showToast('✓ ' + ref + ' avbokad');
-          loadDashboard();
-        }
-      } catch (err) {
-        showToast('⚠️ Fel vid avbokning');
-      }
-    }
+function showLoginScreen() {
+  document.getElementById('tabContent').innerHTML = `
+    <div style="min-height:80vh;display:flex;align-items:center;justify-content:center;padding:20px">
+      <div style="background:white;border-radius:16px;padding:32px 24px;width:100%;max-width:400px;border:1px solid #d0d7ea">
+        <div style="text-align:center;margin-bottom:24px">
+          <div style="font-size:48px;color:#0d1b3e">▲</div>
+          <div style="font-size:22px;font-weight:bold;color:#0d1b3e;margin-top:8px">WAYGO Central</div>
+          <div style="color:#64748b;font-size:13px;margin-top:4px">Dispatch Portal</div>
+        </div>
+        <label class="flabel">E-postadress</label>
+        <input class="finput" id="loginEmail" type="email" placeholder="central@waygo.se" value="central@waygo.se"/>
+        <label class="flabel">Lösenord</label>
+        <input class="finput" id="loginPwd" type="password" placeholder="••••••••" value="waygo123" onkeydown="if(event.key==='Enter')doLogin()"/>
+        <div class="ib ib-red" id="loginErr" style="display:none"></div>
+        <button class="btn btn-primary" style="width:100%;padding:14px" onclick="doLogin()">Logga in →</button>
+      </div>
+    </div>`;
+}
 
-    function buildCard(b, drivers) {
-      const isUrgent = b.cancel_request;
-      const available = drivers.filter(d => d.status === 'available');
-      let assignBtns = '';
-      if (b.status === 'pending' && available.length > 0) {
-        assignBtns = available.map(d =>
-          '<button class="btn btn-green" onclick="assignDriver(' +
-          b.id + ',' + d.id + ',\'' + d.name + '\')">' +
-          '→ ' + d.name.split(' ')[0] + '</button>'
-        ).join('');
-      }
-      return '<div class="booking-card' + (isUrgent ? ' urgent' : '') + '">' +
-        '<div class="booking-top">' +
-          '<span class="booking-id">' + b.booking_ref + '</span>' +
-          getBadge(b.status) +
+function doLogin() {
+  const email = document.getElementById('loginEmail')?.value.trim();
+  const pwd = document.getElementById('loginPwd')?.value.trim();
+  const err = document.getElementById('loginErr');
+  if (email === CENTRAL_USER.email && pwd === CENTRAL_USER.password) {
+    localStorage.setItem('waygo_central_auth', '1');
+    isLoggedIn = true;
+    document.getElementById('navUser').textContent = CENTRAL_USER.name;
+    init();
+  } else {
+    if (err) { err.textContent = '⚠️ Fel e-post eller lösenord'; err.style.display = ''; }
+  }
+}
+
+function logout() {
+  localStorage.removeItem('waygo_central_auth');
+  isLoggedIn = false;
+  if (refreshInterval) clearInterval(refreshInterval);
+  if (socket) socket.disconnect();
+  showLoginScreen();
+}
+
+// INIT
+window.addEventListener('load', () => {
+  if (checkLogin()) {
+    document.getElementById('navUser').textContent = CENTRAL_USER.name;
+    init();
+  }
+});
+
+async function init() {
+  await loadData();
+  connectSocket();
+  showTab(0);
+  // Auto refresh every 15 seconds
+  if (refreshInterval) clearInterval(refreshInterval);
+  refreshInterval = setInterval(async () => {
+    await loadData();
+    showTab(curTab);
+  }, 15000);
+}
+
+async function loadData() {
+  try {
+    const [bookRes, drvRes] = await Promise.all([
+      fetch(API + '/bookings'),
+      fetch(API + '/drivers')
+    ]);
+    const bookData = await bookRes.json();
+    const drvData = await drvRes.json();
+    allBookings = bookData.bookings || [];
+    allDrivers = drvData.drivers || [];
+  } catch(e) {
+    console.log('Load error:', e);
+  }
+}
+
+// SOCKET
+function connectSocket() {
+  try {
+    socket = io(API, { timeout: 5000 });
+
+    socket.on('connect', () => {
+      console.log('Central socket connected');
+      socket.emit('central:join');
+    });
+
+    // New booking arrives
+    socket.on('booking:new', (booking) => {
+      allBookings.unshift(booking);
+      showAlert('🚨 Ny bokning! ' + booking.booking_ref + ' · ' + booking.from_address, 'warning');
+      showToast('🚨 Ny bokning: ' + booking.booking_ref);
+      if (curTab === 0) showTab(0);
+    });
+
+    // Booking assigned
+    socket.on('booking:assigned', (booking) => {
+      allBookings = allBookings.map(b => b.id === booking.id ? { ...b, ...booking } : b);
+      if (curTab === 0) showTab(0);
+    });
+
+    // Booking completed — KEY FIX
+    socket.on('booking:completed', (booking) => {
+      allBookings = allBookings.map(b => b.id === booking.id ? { ...b, ...booking, status: 'completed' } : b);
+      showAlert('✅ Resa slutförd — ' + booking.booking_ref + ' · ' + (booking.fare_sek || 0) + ' kr', 'success');
+      showToast('✅ ' + booking.booking_ref + ' avslutad');
+      // Free up driver
+      allDrivers = allDrivers.map(d =>
+        d.id === booking.driver_id ? { ...d, status: 'available' } : d);
+      if (curTab === 0) showTab(0);
+      if (curTab === 2) showTab(2);
+    });
+
+    // Booking cancelled
+    socket.on('booking:cancelled', (data) => {
+      allBookings = allBookings.map(b =>
+        b.id === data.id ? { ...b, status: 'cancelled', driver_id: null, driver_name: null } : b);
+      if (curTab === 0) showTab(0);
+    });
+
+    // Cancel request from customer
+    socket.on('booking:cancelRequest', (data) => {
+      showAlert('⚠️ Avbokningsförfrågan från kund — Bokning ' + data.bookingId, 'warning');
+      showToast('⚠️ Kund vill avboka bokning ' + data.bookingId);
+    });
+
+    // Driver location update
+    socket.on('driver:location', (data) => {
+      driverPositions[data.driverId] = { lat: data.lat, lng: data.lng };
+      updateDriverOnMap(data.driverId, data.lat, data.lng);
+    });
+
+    // Driver status update
+    socket.on('driver:status', (data) => {
+      allDrivers = allDrivers.map(d =>
+        d.id === data.driverId ? { ...d, status: data.status } : d);
+      if (curTab === 2) showTab(2);
+    });
+
+    socket.on('disconnect', () => { console.log('Central socket disconnected'); });
+
+  } catch(e) { console.log('Socket error:', e); }
+}
+
+// TOAST & ALERT
+function showToast(msg) {
+  try {
+    const el = document.getElementById('toast');
+    el.textContent = msg;
+    el.classList.add('show');
+    setTimeout(() => el.classList.remove('show'), 4000);
+  } catch(e) {}
+}
+
+function showAlert(msg, type) {
+  const banner = document.getElementById('alertBanner');
+  const text = document.getElementById('alertText');
+  if (!banner || !text) return;
+  banner.className = 'alert-banner show alert-' + (type || 'info');
+  text.textContent = msg;
+  setTimeout(hideAlert, 8000);
+}
+
+function hideAlert() {
+  const banner = document.getElementById('alertBanner');
+  if (banner) banner.classList.remove('show');
+}
+
+function closeMod(id) {
+  try { document.getElementById(id).classList.remove('open'); } catch(e) {}
+}
+
+function closeMIfOut(e, id) {
+  if (e.target === document.getElementById(id)) closeMod(id);
+}
+
+// TABS
+function showTab(i) {
+  try {
+    curTab = i;
+    document.querySelectorAll('.tab').forEach((t, j) => t.classList.toggle('on', i === j));
+    const c = document.getElementById('tabContent');
+    if (!c) return;
+    if (i === 0) c.innerHTML = tabBookings();
+    else if (i === 1) c.innerHTML = tabMap();
+    else if (i === 2) c.innerHTML = tabDrivers();
+    else if (i === 3) c.innerHTML = tabChat();
+  } catch(e) { console.log('showTab error:', e); }
+}
+
+// BOOKINGS TAB
+function tabBookings() {
+  const pending = allBookings.filter(b => b.status === 'pending');
+  const active = allBookings.filter(b => b.status === 'assigned');
+  const completed = allBookings.filter(b => b.status === 'completed');
+  const cancelled = allBookings.filter(b => b.status === 'cancelled');
+
+  const totalEarnings = completed.reduce((s, b) => s + (b.fare_sek || 0), 0);
+
+  return '<div class="page">' +
+    // Stats
+    '<div class="stats-grid">' +
+    statCard(active.length, 'Aktiva resor', '#1a56db') +
+    statCard(pending.length, 'Väntar', '#d97706') +
+    statCard(allDrivers.filter(d => d.status === 'available').length, 'Lediga förare', '#15803d') +
+    statCard(totalEarnings + ' kr', 'Intäkter idag', '#7c3aed') +
+    '</div>' +
+
+    // Pending bookings
+    (pending.length > 0 ? '<div class="stitle">🔴 Väntar på förare (' + pending.length + ')</div>' +
+    pending.map(b => bookingCard(b)).join('') : '') +
+
+    // Active bookings
+    (active.length > 0 ? '<div class="stitle">🔵 Aktiva resor (' + active.length + ')</div>' +
+    active.map(b => bookingCard(b)).join('') : '') +
+
+    // Completed
+    (completed.length > 0 ? '<div class="stitle">✅ Avslutade idag (' + completed.length + ')</div>' +
+    completed.slice(0, 10).map(b => bookingCard(b)).join('') : '') +
+
+    // Cancelled
+    (cancelled.length > 0 ? '<div class="stitle" style="margin-top:10px">❌ Avbokade (' + cancelled.length + ')</div>' +
+    cancelled.slice(0, 5).map(b => bookingCard(b)).join('') : '') +
+
+    (allBookings.length === 0 ? '<div class="empty"><div class="empty-icon">📋</div>Inga bokningar ännu</div>' : '') +
+    '<div class="bspace"></div></div>';
+}
+
+function statCard(val, label, color) {
+  return '<div class="stat-card">' +
+    '<div class="stat-val" style="color:' + color + '">' + val + '</div>' +
+    '<div class="stat-lbl">' + label + '</div>' +
+    '</div>';
+}
+
+function getBadge(status) {
+  if (status === 'pending') return '<span class="badge b-pending">Väntar</span>';
+  if (status === 'assigned') return '<span class="badge b-assigned">Tilldelad</span>';
+  if (status === 'completed') return '<span class="badge b-completed">Avslutad</span>';
+  if (status === 'cancelled') return '<span class="badge b-cancelled">Avbokad</span>';
+  return '<span class="badge b-cancelled">' + status + '</span>';
+}
+
+function bookingCard(b) {
+  const isPre = b.booking_type === 'pre';
+  const cardClass = 'bcard ' + (b.status === 'pending' ? 'pending' : b.status === 'assigned' ? 'assigned' : b.status === 'completed' ? 'completed' : 'cancelled');
+
+  let actions = '';
+
+  if (b.status === 'pending') {
+    actions = '<button class="btn btn-primary btn-sm" onclick="openAssign(' + b.id + ',\'' + b.booking_ref + '\')">Tilldela förare</button>' +
+      '<button class="btn btn-danger btn-sm" onclick="openCancel(' + b.id + ',\'' + b.booking_ref + '\')">Avboka</button>';
+  } else if (b.status === 'assigned') {
+    actions = '<button class="btn btn-blue btn-sm" onclick="openChat(\'central-driver-' + b.driver_id + '\',\'Förare: ' + (b.driver_name||'') + '\')">💬 Chatta med förare</button>' +
+      '<button class="btn btn-teal btn-sm" onclick="openChat(\'customer-central-' + b.id + '\',\'Kund: ' + b.customer_name + '\')">💬 Kund</button>' +
+      '<button class="btn btn-danger btn-sm" onclick="openCancel(' + b.id + ',\'' + b.booking_ref + '\')">Avboka</button>';
+  } else if (b.status === 'completed') {
+    actions = '<button class="btn btn-gray btn-sm" onclick="showToast(\'📄 ' + b.booking_ref + ' · ' + (b.fare_sek||0) + ' kr\')">📄 Kvitto</button>';
+  }
+
+  return '<div class="' + cardClass + '">' +
+    '<div class="btop">' +
+    '<span class="bref">' + b.booking_ref + '</span>' +
+    '<div style="display:flex;gap:4px;align-items:center">' +
+    (isPre ? '<span class="badge b-purple">📅 Förbokning</span>' : '') +
+    getBadge(b.status) + '</div></div>' +
+    (isPre && b.scheduled_at ? '<div style="font-size:11px;color:#7c3aed;font-weight:700;margin-bottom:4px">📅 ' +
+      new Date(b.scheduled_at).toLocaleString('sv-SE', { dateStyle:'medium', timeStyle:'short' }) + '</div>' : '') +
+    '<div class="broute">📍 ' + b.from_address + ' → 🏁 ' + b.to_address + '</div>' +
+    '<div class="bdetail">' +
+    '👤 ' + b.customer_name + ' · ' + (b.customer_phone || '') + '<br>' +
+    (b.driver_name ? '🚖 ' + b.driver_name + ' · ' : '') +
+    b.fare_sek + ' kr · ' + b.payment_method + '<br>' +
+    '🕐 ' + new Date(b.created_at).toLocaleString('sv-SE', { dateStyle:'short', timeStyle:'short' }) +
+    '</div>' +
+    (actions ? '<div class="bactions">' + actions + '</div>' : '') +
+    '</div>';
+}
+
+// MAP TAB
+function tabMap() {
+  const availDrivers = allDrivers.filter(d => d.status !== 'offline');
+  return '<div class="page">' +
+    '<div class="stitle">' + availDrivers.length + ' fordon aktiva</div>' +
+    '<div class="mmap" id="liveMap">' +
+    '<div class="mmap-bg"></div>' +
+    '<div class="mroad-h" style="top:30%"></div>' +
+    '<div class="mroad-h" style="top:55%"></div>' +
+    '<div class="mroad-h" style="top:75%"></div>' +
+    '<div class="mroad-v" style="left:25%"></div>' +
+    '<div class="mroad-v" style="left:50%"></div>' +
+    '<div class="mroad-v" style="left:75%"></div>' +
+    '<div class="map-live-badge">🔴 Live · ' + availDrivers.length + ' fordon</div>' +
+    availDrivers.map((d, i) => {
+      const pos = driverPositions[d.id];
+      const x = pos ? Math.min(85, Math.max(15, ((pos.lng - 17.8) / (18.2 - 17.8)) * 80 + 10)) : (20 + i * 25);
+      const y = pos ? Math.min(85, Math.max(15, ((59.5 - pos.lat) / (59.5 - 59.2)) * 80 + 10)) : (30 + i * 20);
+      const color = d.status === 'available' ? '#22c55e' : d.status === 'busy' ? '#f97316' : '#64748b';
+      return '<div class="dmap-marker" id="dmarker-' + d.id + '" style="left:' + x + '%;top:' + y + '%;border-color:' + color + '">🚖</div>' +
+        '<div class="dmap-label" id="dlabel-' + d.id + '" style="left:' + x + '%;top:calc(' + y + '% + 22px)">' + d.name.split(' ')[0] + '</div>';
+    }).join('') +
+    '</div>' +
+    '<div class="stitle">Förare på kartan</div>' +
+    availDrivers.map(d => {
+      const dotClass = d.status === 'available' ? 'dot-available' : d.status === 'busy' ? 'dot-busy' : 'dot-offline';
+      const statusText = d.status === 'available' ? 'Ledig' : d.status === 'busy' ? 'På uppdrag' : 'Offline';
+      return '<div class="drv-card">' +
+        '<div class="drv-avatar">' + d.name.charAt(0) + '</div>' +
+        '<div style="flex:1">' +
+        '<div style="font-size:14px;font-weight:700;color:#0d1b3e">' + d.name + '</div>' +
+        '<div style="font-size:12px;color:#64748b">' + d.plate + ' · ' + d.city + '</div>' +
         '</div>' +
-        '<div class="booking-customer">' + b.customer_name + '</div>' +
-        '<div class="booking-route">📍 ' + b.from_address + ' → 🏁 ' + b.to_address + '</div>' +
-        '<div class="booking-footer">' +
-          '<span class="booking-driver">' + (b.driver_name ? '🚖 ' + b.driver_name : 'Ingen förare ännu') + '</span>' +
-          '<span class="booking-fare">' + b.fare_sek + ' kr</span>' +
-        '</div>' +
-        '<div class="actions">' +
-          assignBtns +
-          (b.status !== 'cancelled' ?
-            '<button class="btn btn-red" onclick="cancelBooking(' + b.id + ',\'' + b.booking_ref + '\')">✕ Avboka</button>' : '') +
-          '<button class="btn btn-navy" onclick="window.location=\'chat.html\'">💬 Chatta</button>' +
-        '</div>' +
-      '</div>';
+        '<div style="display:flex;align-items:center;gap:6px">' +
+        '<div class="drv-status-dot ' + dotClass + '"></div>' +
+        '<span style="font-size:12px;color:#64748b">' + statusText + '</span>' +
+        '</div></div>';
+    }).join('') +
+    '<div class="bspace"></div></div>';
+}
+
+function updateDriverOnMap(driverId, lat, lng) {
+  const marker = document.getElementById('dmarker-' + driverId);
+  const label = document.getElementById('dlabel-' + driverId);
+  if (!marker) return;
+  const x = Math.min(85, Math.max(15, ((lng - 17.8) / (18.2 - 17.8)) * 80 + 10));
+  const y = Math.min(85, Math.max(15, ((59.5 - lat) / (59.5 - 59.2)) * 80 + 10));
+  marker.style.left = x + '%';
+  marker.style.top = y + '%';
+  if (label) { label.style.left = x + '%'; label.style.top = 'calc(' + y + '% + 22px)'; }
+}
+
+// DRIVERS TAB
+function tabDrivers() {
+  return '<div class="page">' +
+    '<div class="stitle">Alla förare (' + allDrivers.length + ')</div>' +
+    allDrivers.map(d => {
+      const dotClass = d.status === 'available' ? 'dot-available' : d.status === 'busy' ? 'dot-busy' : 'dot-offline';
+      const statusText = d.status === 'available' ? '🟢 Ledig' : d.status === 'busy' ? '🟠 På uppdrag' : '⚫ Offline';
+      const activeBook = allBookings.find(b => b.driver_id === d.id && b.status === 'assigned');
+      return '<div class="drv-card" style="align-items:flex-start">' +
+        '<div class="drv-avatar">' + d.name.charAt(0) + '</div>' +
+        '<div style="flex:1">' +
+        '<div style="font-size:14px;font-weight:700;color:#0d1b3e">' + d.name + '</div>' +
+        '<div style="font-size:12px;color:#64748b;margin-bottom:4px">' + d.plate + ' · ' + (d.taxiNr || '') + ' · ' + d.city + '</div>' +
+        '<div style="font-size:12px;color:#64748b;margin-bottom:6px">' + statusText + ' · ⭐ ' + (d.rating || '—') + '</div>' +
+        (activeBook ? '<div style="font-size:11px;color:#1a56db;background:#dbeafe;padding:4px 8px;border-radius:6px;display:inline-block">' +
+          '📍 ' + activeBook.from_address + ' → ' + activeBook.to_address + '</div>' : '') +
+        '<div style="display:flex;gap:6px;margin-top:8px">' +
+        '<button class="btn btn-primary btn-sm" onclick="openChat(\'central-driver-' + d.id + '\',\'' + d.name + '\')">💬 Chatta</button>' +
+        '</div></div></div>';
+    }).join('') +
+    (allDrivers.length === 0 ? '<div class="empty"><div class="empty-icon">🚖</div>Inga förare registrerade</div>' : '') +
+    '<div class="bspace"></div></div>';
+}
+
+// CHAT TAB
+function tabChat() {
+  const activeBookings = allBookings.filter(b => b.status === 'assigned');
+  return '<div class="page">' +
+    '<div class="stitle">Chatta med förare</div>' +
+    allDrivers.map(d => '<div class="drv-card" onclick="openChat(\'central-driver-' + d.id + '\',\'' + d.name + '\')" style="cursor:pointer">' +
+      '<div class="drv-avatar" style="background:#7c3aed">💬</div>' +
+      '<div><div style="font-size:14px;font-weight:700;color:#0d1b3e">' + d.name + '</div>' +
+      '<div style="font-size:12px;color:#64748b">' + d.plate + '</div></div>' +
+      '<div style="margin-left:auto;color:#94a3b8;font-size:18px">›</div></div>'
+    ).join('') +
+    (activeBookings.length > 0 ? '<div class="stitle" style="margin-top:6px">Chatta med kunder</div>' +
+    activeBookings.map(b => '<div class="drv-card" onclick="openChat(\'customer-central-' + b.id + '\',\'' + b.customer_name + '\')" style="cursor:pointer">' +
+      '<div class="drv-avatar" style="background:#0d9488">👤</div>' +
+      '<div><div style="font-size:14px;font-weight:700;color:#0d1b3e">' + b.customer_name + '</div>' +
+      '<div style="font-size:12px;color:#64748b">' + b.booking_ref + ' · ' + b.customer_phone + '</div></div>' +
+      '<div style="margin-left:auto;color:#94a3b8;font-size:18px">›</div></div>'
+    ).join('') : '') +
+    '<div class="bspace"></div></div>';
+}
+
+// ASSIGN DRIVER
+function openAssign(bookingId, bookingRef) {
+  assignBookingId = bookingId;
+  assignBookingRef = bookingRef;
+  const booking = allBookings.find(b => b.id === bookingId);
+  const infoEl = document.getElementById('assignInfo');
+  const listEl = document.getElementById('assignDriverList');
+  if (infoEl) infoEl.innerHTML = '<strong>Bokning:</strong> ' + bookingRef + '<br><strong>Från:</strong> ' + (booking?.from_address||'') + '<br><strong>Till:</strong> ' + (booking?.to_address||'');
+  const available = allDrivers.filter(d => d.status === 'available');
+  if (listEl) {
+    if (available.length === 0) {
+      listEl.innerHTML = '<div class="ib ib-yellow">⚠️ Inga lediga förare just nu.</div>';
+    } else {
+      listEl.innerHTML = available.map(d =>
+        '<div class="drv-card" style="cursor:pointer;margin-bottom:8px" onclick="doAssign(' + d.id + ',\'' + d.name + '\')">' +
+        '<div class="drv-avatar">' + d.name.charAt(0) + '</div>' +
+        '<div style="flex:1"><div style="font-size:14px;font-weight:700;color:#0d1b3e">' + d.name + '</div>' +
+        '<div style="font-size:12px;color:#64748b">' + d.plate + ' · ⭐ ' + (d.rating||'—') + '</div></div>' +
+        '<div style="color:#15803d;font-size:12px;font-weight:700">✓ Ledig</div></div>'
+      ).join('');
     }
+  }
+  document.getElementById('assignModal').classList.add('open');
+}
 
-    function addStaticDriversToMap(drivers) {
-      const map = document.getElementById('liveMap');
-      if (!map) return;
-      const positions = [
-        { x:45, y:35 },
-        { x:25, y:60 },
-        { x:70, y:65 },
-      ];
-      drivers.forEach(function(d, i) {
-        if (d.status === 'offline') return;
-        const pos = positions[i] || { x:50, y:50 };
-        let dot = document.getElementById('mapDriver' + d.id);
-        if (!dot) {
-          dot = document.createElement('div');
-          dot.id = 'mapDriver' + d.id;
-          dot.className = 'map-driver-dot ' + d.status;
-          dot.innerHTML = (d.status === 'busy' ? '🚖' : '🚕') +
-            '<span class="map-label-tag">' + d.name.split(' ')[0] + '</span>';
-          map.appendChild(dot);
-        }
-        dot.style.left = pos.x + '%';
-        dot.style.top = pos.y + '%';
-      });
-      const active = drivers.filter(d => d.status !== 'offline').length;
-      const countEl = document.getElementById('activeCount');
-      if (countEl) countEl.textContent = active;
+async function doAssign(driverId, driverName) {
+  closeMod('assignModal');
+  try {
+    const res = await fetch(API + '/bookings/' + assignBookingId + '/assign', {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ driver_id: driverId })
+    });
+    if (res.ok) {
+      allBookings = allBookings.map(b =>
+        b.id === assignBookingId ? { ...b, status: 'assigned', driver_id: driverId, driver_name: driverName } : b);
+      allDrivers = allDrivers.map(d => d.id === driverId ? { ...d, status: 'busy' } : d);
+      showAlert('✅ ' + assignBookingRef + ' tilldelad till ' + driverName, 'success');
+      showToast('✅ Tilldelad: ' + driverName);
+      showTab(0);
+    } else {
+      showToast('⚠️ Kunde inte tilldela');
     }
+  } catch(e) { showToast('⚠️ Nätverksfel'); }
+}
 
-    async function loadDashboard() {
-      try {
-        const [bRes, dRes] = await Promise.all([
-          fetch(API + '/bookings'),
-          fetch(API + '/drivers')
-        ]);
-        const bData = await bRes.json();
-        const dData = await dRes.json();
-        const bookings = bData.bookings;
-        const drivers = dData.drivers;
+// CANCEL
+function openCancel(bookingId, bookingRef) {
+  cancelBookingId = bookingId;
+  cancelBookingRef = bookingRef;
+  const booking = allBookings.find(b => b.id === bookingId);
+  const infoEl = document.getElementById('cancelInfo');
+  if (infoEl) infoEl.innerHTML = '<strong>Bokning:</strong> ' + bookingRef + '<br>' +
+    '<strong>Kund:</strong> ' + (booking?.customer_name||'') + '<br>' +
+    '<strong>Förare:</strong> ' + (booking?.driver_name||'Ingen');
+  document.getElementById('cancelModal').classList.add('open');
+}
 
-        addStaticDriversToMap(drivers);
-
-        document.getElementById('statActive').textContent =
-          bookings.filter(b => b.status === 'assigned').length;
-        document.getElementById('statPending').textContent =
-          bookings.filter(b => b.status === 'pending').length;
-        document.getElementById('statDrivers').textContent =
-          drivers.filter(d => d.status === 'available').length;
-        document.getElementById('statCancel').textContent =
-          bookings.filter(b => b.cancel_request).length;
-
-        const active    = bookings.filter(b => b.status === 'assigned');
-        const pending   = bookings.filter(b => b.status === 'pending');
-        const cancelled = bookings.filter(b => b.status === 'cancelled');
-
-        let html = '';
-        if (active.length > 0) {
-          html += '<div class="section-title" style="margin-top:0">Aktiva resor</div>';
-          html += active.map(b => buildCard(b, drivers)).join('');
-        }
-        if (pending.length > 0) {
-          html += '<div class="section-title">Väntar på förare</div>';
-          html += pending.map(b => buildCard(b, drivers)).join('');
-        }
-        if (cancelled.length > 0) {
-          html += '<div class="section-title">Avbokade</div>';
-          html += cancelled.map(b => buildCard(b, drivers)).join('');
-        }
-        if (bookings.length === 0) {
-          html = '<div class="loading-box">Inga bokningar ännu</div>';
-        }
-
-        document.getElementById('bookingsList').innerHTML = html;
-        document.getElementById('errorBox').style.display = 'none';
-
-      } catch (err) {
-        document.getElementById('errorBox').style.display = 'block';
-        document.getElementById('bookingsList').innerHTML =
-          '<div class="loading-box">Kunde inte ladda bokningar.</div>';
+async function doCancel() {
+  closeMod('cancelModal');
+  try {
+    const res = await fetch(API + '/bookings/' + cancelBookingId + '/cancel', { method: 'PATCH' });
+    if (res.ok) {
+      const booking = allBookings.find(b => b.id === cancelBookingId);
+      if (booking?.driver_id) {
+        allDrivers = allDrivers.map(d => d.id === booking.driver_id ? { ...d, status: 'available' } : d);
       }
-    }
+      allBookings = allBookings.map(b =>
+        b.id === cancelBookingId ? { ...b, status: 'cancelled', driver_id: null, driver_name: null } : b);
+      showAlert('Bokning ' + cancelBookingRef + ' avbokad', 'info');
+      showToast('✓ ' + cancelBookingRef + ' avbokad');
+      showTab(0);
+    } else { showToast('⚠️ Kunde inte avboka'); }
+  } catch(e) { showToast('⚠️ Nätverksfel'); }
+}
 
-    // Socket.io
-    try {
-      const socket = io(API);
-      socket.on('connect', function() {
-        socket.emit('central:join');
-      });
-      socket.on('driver:location', function(data) {
-        const map = document.getElementById('liveMap');
-        if (!map) return;
-        let dot = document.getElementById('mapDriver' + data.driverId);
-        if (dot) {
-          const minLat=59.2, maxLat=59.5, minLng=17.8, maxLng=18.2;
-          const x = ((data.lng - minLng) / (maxLng - minLng)) * 90 + 5;
-          const y = ((maxLat - data.lat) / (maxLat - minLat)) * 90 + 5;
-          dot.style.left = x + '%';
-          dot.style.top  = y + '%';
-        }
-      });
-      socket.on('booking:new', function(b) {
-        showToast('🚖 Ny bokning: ' + b.booking_ref);
-        loadDashboard();
-      });
-      socket.on('booking:assigned', function() { loadDashboard(); });
-      socket.on('booking:cancelled', function() { loadDashboard(); });
-      socket.on('booking:cancelRequest', function(data) {
-        showToast('⚠️ Avbokningsförfrågan: ' + data.customerName);
-        loadDashboard();
-      });
-    } catch(e) {
-      console.log('Socket not available: ' + e.message);
-    }
+// CHAT
+function openChat(threadKey, personName) {
+  currentChatKey = threadKey;
+  document.getElementById('chatTitle').textContent = '💬 ' + personName;
+  document.getElementById('chatMessages').innerHTML =
+    '<div style="text-align:center;color:#94a3b8;font-size:12px;padding:20px">Laddar...</div>';
+  document.getElementById('chatModal').classList.add('open');
+  loadChat(threadKey);
+}
 
-    loadDashboard();
-    setInterval(loadDashboard, 30000);
-  </script>
+async function loadChat(threadKey) {
+  try {
+    const res = await fetch(API + '/messages/' + threadKey);
+    const data = await res.json();
+    const msgs = data.messages || [];
+    const el = document.getElementById('chatMessages');
+    if (msgs.length === 0) {
+      el.innerHTML = '<div style="text-align:center;color:#94a3b8;font-size:12px;padding:20px">Inga meddelanden ännu</div>';
+      return;
+    }
+    el.innerHTML = msgs.map(m => {
+      const mine = m.sender_role === 'central';
+      const avClass = m.sender_role === 'driver' ? 'drv' : m.sender_role === 'customer' ? 'cus' : '';
+      return '<div class="cmsg ' + (mine?'mine':'other') + '">' +
+        '<div class="cav ' + avClass + '">' + (m.sender_name?.charAt(0)||'?') + '</div>' +
+        '<div style="max-width:72%"><div style="font-size:10px;color:#94a3b8;margin-bottom:2px;text-align:' + (mine?'right':'left') + '">' + m.sender_name + '</div>' +
+        '<div class="cbubble">' + m.content + '</div></div></div>';
+    }).join('');
+    el.scrollTop = el.scrollHeight;
+  } catch(e) {
+    document.getElementById('chatMessages').innerHTML =
+      '<div style="text-align:center;color:#dc2626;font-size:12px;padding:20px">Kunde inte ladda</div>';
+  }
+}
+
+async function sendChat() {
+  const input = document.getElementById('chatInput');
+  const text = input ? input.value.trim() : '';
+  if (!text || !currentChatKey) return;
+  const el = document.getElementById('chatMessages');
+  const msg = document.createElement('div');
+  msg.className = 'cmsg mine';
+  msg.innerHTML = '<div class="cav">C</div><div style="max-width:72%"><div style="font-size:10px;color:#94a3b8;margin-bottom:2px;text-align:right">Central</div><div class="cbubble">' + text + '</div></div>';
+  el.appendChild(msg); el.scrollTop = el.scrollHeight;
+  if (input) input.value = '';
+  try {
+    await fetch(API + '/messages', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ thread_key: currentChatKey, sender_name: 'Central Dispatch', sender_role: 'central', content: text })
+    });
+  } catch(e) {}
+}
+</script>
 </body>
 </html>

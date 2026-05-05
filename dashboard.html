@@ -8,8 +8,6 @@
   <style>
     *{margin:0;padding:0;box-sizing:border-box}
     body{font-family:Arial,sans-serif;background:#eef1f8;color:#0d1b3e;min-height:100vh}
-
-    /* NAV */
     .navbar{background:#0d1b3e;padding:0 20px;display:flex;align-items:center;
       justify-content:space-between;height:56px;border-bottom:1px solid #1a2f5e;
       position:sticky;top:0;z-index:200}
@@ -20,19 +18,6 @@
     .nav-right{display:flex;align-items:center;gap:12px}
     .nav-user{color:#4a6090;font-size:13px}
     .nav-logout{color:#4a6090;font-size:12px;cursor:pointer;background:none;border:none;padding:4px}
-
-    /* BOTTOM NAV (mobile) */
-    .bnav{position:fixed;bottom:0;left:0;right:0;background:#0d1b3e;
-      display:flex;justify-content:space-around;padding:10px 0;
-      border-top:1px solid #1a2f5e;z-index:100}
-    .bni{display:flex;flex-direction:column;align-items:center;gap:3px;
-      color:#4a6090;font-size:10px;cursor:pointer;border:none;background:none;
-      text-decoration:none;padding:4px 8px}
-    .bni.on{color:#fbbf24}
-    .bni-icon{font-size:20px}
-    .bspace{height:80px}
-
-    /* ALERT BANNER */
     .alert-banner{padding:12px 20px;font-size:13px;font-weight:700;
       display:none;align-items:center;justify-content:space-between}
     .alert-banner.show{display:flex}
@@ -40,26 +25,17 @@
     .alert-info{background:#dbeafe;color:#1a56db;border-bottom:1px solid #93c5fd}
     .alert-warning{background:#fef3c7;color:#d97706;border-bottom:1px solid #fde68a}
     .alert-close{background:none;border:none;cursor:pointer;font-size:16px;color:inherit}
-
-    /* PAGE */
     .page{padding:16px;padding-bottom:90px}
-
-    /* STATS */
     .stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px}
     .stat-card{background:white;border-radius:12px;padding:14px 12px;
       border:1px solid #d0d7ea;text-align:center}
     .stat-val{font-size:22px;font-weight:800;color:#0d1b3e}
     .stat-lbl{font-size:10px;color:#64748b;text-transform:uppercase;letter-spacing:1px;margin-top:2px}
-
-    /* CARDS */
     .card{background:white;border-radius:14px;padding:18px;margin-bottom:14px;
       border:1px solid #d0d7ea;box-shadow:0 1px 4px rgba(0,0,0,.06)}
     .stitle{font-size:10px;font-weight:700;color:#64748b;text-transform:uppercase;
       letter-spacing:1.5px;margin-bottom:12px}
-
-    /* BOOKING CARDS */
-    .bcard{background:white;border-radius:12px;padding:14px;margin-bottom:10px;
-      border:1px solid #d0d7ea}
+    .bcard{background:white;border-radius:12px;padding:14px;margin-bottom:10px;border:1px solid #d0d7ea}
     .bcard.pending{border-color:#d97706;box-shadow:0 0 0 3px #fef3c7}
     .bcard.assigned{border-color:#1a56db;box-shadow:0 0 0 3px #dbeafe}
     .bcard.completed{border-color:#15803d;box-shadow:0 0 0 3px #dcfce7}
@@ -70,16 +46,12 @@
     .broute{font-size:13px;font-weight:600;color:#0d1b3e;margin-bottom:4px}
     .bdetail{font-size:11px;color:#64748b;margin-bottom:10px}
     .bactions{display:flex;gap:8px;flex-wrap:wrap}
-
-    /* BADGES */
     .badge{padding:3px 10px;border-radius:20px;font-size:11px;font-weight:700;white-space:nowrap}
     .b-pending{background:#fef3c7;color:#d97706;border:1px solid #fde68a}
     .b-assigned{background:#dbeafe;color:#1a56db;border:1px solid #93c5fd}
     .b-completed{background:#dcfce7;color:#15803d;border:1px solid #86efac}
     .b-cancelled{background:#f1f5f9;color:#64748b;border:1px solid #e2e8f0}
     .b-purple{background:#ede9fe;color:#7c3aed;border:1px solid #ddd6fe}
-
-    /* BUTTONS */
     .btn{padding:10px 16px;border-radius:8px;font-size:13px;font-weight:700;
       border:none;cursor:pointer;text-align:center}
     .btn:disabled{opacity:.5;cursor:default}
@@ -90,16 +62,6 @@
     .btn-teal{background:#0d9488;color:white}
     .btn-blue{background:#1a56db;color:white}
     .btn-sm{padding:7px 12px;font-size:12px}
-
-    /* DRIVER SELECT */
-    .driver-select{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px}
-    .driver-btn{padding:7px 12px;border-radius:20px;border:2px solid #d0d7ea;
-      background:white;color:#0d1b3e;font-size:12px;font-weight:700;cursor:pointer}
-    .driver-btn:hover{border-color:#0d1b3e;background:#0d1b3e;color:#fbbf24}
-    .driver-btn.available{border-color:#15803d;color:#15803d}
-    .driver-btn.busy{border-color:#d97706;color:#d97706;opacity:.6;cursor:not-allowed}
-
-    /* MINI MAP */
     .mmap{background:#d4e8d4;border-radius:10px;height:200px;position:relative;
       overflow:hidden;margin-bottom:14px;border:1px solid #b8d4b8}
     .mmap-bg{position:absolute;inset:0;
@@ -117,8 +79,6 @@
       transform:translateX(-50%);white-space:nowrap}
     .map-live-badge{position:absolute;top:8px;left:8px;background:rgba(13,27,62,.9);
       color:#fbbf24;border-radius:6px;padding:4px 10px;font-size:11px;font-weight:bold}
-
-    /* MODAL */
     .moverlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);
       z-index:300;align-items:flex-end;justify-content:center}
     .moverlay.open{display:flex}
@@ -130,8 +90,6 @@
     .minfo strong{color:#0d1b3e}
     .mbtns{display:flex;gap:10px}
     .mbtn{flex:1;padding:14px;border-radius:10px;font-size:14px;font-weight:bold;border:none;cursor:pointer}
-
-    /* CHAT */
     .chatbox{height:200px;overflow-y:auto;padding:8px 0;
       display:flex;flex-direction:column;gap:8px;margin-bottom:10px}
     .cmsg{display:flex;gap:8px;align-items:flex-end}
@@ -148,16 +106,12 @@
       background:#f8fafc;font-size:13px;color:#0d1b3e;outline:none}
     .csend{width:38px;height:38px;border-radius:50%;background:#0d1b3e;border:none;
       color:#fbbf24;font-size:15px;cursor:pointer;flex-shrink:0}
-
-    /* TABS */
     .tabbar{display:flex;background:white;border-bottom:1px solid #d0d7ea;padding:0 16px;
       position:sticky;top:56px;z-index:100}
     .tab{flex:1;padding:13px 8px;text-align:center;font-size:13px;font-weight:500;
       color:#64748b;cursor:pointer;border-bottom:2.5px solid transparent;
       background:none;border-top:none;border-left:none;border-right:none}
     .tab.on{color:#0d1b3e;font-weight:700;border-bottom-color:#0d1b3e}
-
-    /* DRIVER CARD */
     .drv-card{background:white;border-radius:12px;padding:14px;margin-bottom:10px;
       border:1px solid #d0d7ea;display:flex;align-items:center;gap:12px}
     .drv-avatar{width:44px;height:44px;border-radius:50%;background:#0d1b3e;
@@ -167,27 +121,19 @@
     .dot-available{background:#22c55e}
     .dot-busy{background:#f97316}
     .dot-offline{background:#64748b}
-
-    /* TOAST */
     .toast{position:fixed;top:70px;left:20px;right:20px;background:#0d1b3e;
       color:#fbbf24;padding:14px 20px;border-radius:12px;font-size:14px;
       font-weight:bold;text-align:center;z-index:999;display:none;
       box-shadow:0 4px 20px rgba(0,0,0,.3)}
     .toast.show{display:block}
-
-    /* FORM */
     .flabel{font-size:11px;font-weight:700;color:#64748b;text-transform:uppercase;
       letter-spacing:1px;margin-bottom:5px;display:block}
     .finput{width:100%;padding:10px 14px;border-radius:8px;border:1px solid #d0d7ea;
       background:#f8fafc;color:#0d1b3e;font-size:14px;outline:none;
-      box-sizing:border-box;margin-bottom:12px}
+      box-sizing:border-box;margin-bottom:10px}
     .finput:focus{border-color:#0d1b3e}
-
-    /* EMPTY STATE */
     .empty{text-align:center;padding:40px 20px;color:#94a3b8;font-size:14px}
     .empty-icon{font-size:48px;margin-bottom:12px}
-
-    /* INFO */
     .ib{border-radius:8px;padding:10px 12px;font-size:12px;margin-bottom:10px}
     .ib-blue{background:#dbeafe;border:1px solid #93c5fd;color:#1a56db}
     .ib-green{background:#dcfce7;border:1px solid #86efac;color:#15803d}
@@ -197,26 +143,20 @@
 </head>
 <body>
 
-<!-- NAVBAR -->
 <div class="navbar">
   <div class="nav-logo">▲ WAYGO</div>
-  <div class="nav-live">
-    <div class="nav-live-dot"></div>
-    LIVE
-  </div>
+  <div class="nav-live"><div class="nav-live-dot"></div>LIVE</div>
   <div class="nav-right">
     <span class="nav-user" id="navUser">Central</span>
     <button class="nav-logout" onclick="logout()">Logga ut</button>
   </div>
 </div>
 
-<!-- ALERT BANNER -->
 <div class="alert-banner" id="alertBanner">
   <span id="alertText"></span>
   <button class="alert-close" onclick="hideAlert()">✕</button>
 </div>
 
-<!-- TAB BAR -->
 <div class="tabbar">
   <button class="tab on" id="tab0" onclick="showTab(0)">📋 Bokningar</button>
   <button class="tab" id="tab1" onclick="showTab(1)">🗺️ Karta</button>
@@ -224,7 +164,6 @@
   <button class="tab" id="tab3" onclick="showTab(3)">💬 Chatt</button>
 </div>
 
-<!-- TAB CONTENT -->
 <div id="tabContent"></div>
 
 <!-- ASSIGN MODAL -->
@@ -242,7 +181,7 @@
 <div class="moverlay" id="cancelModal" onclick="closeMIfOut(event,'cancelModal')">
   <div class="mbox">
     <div class="mtitle">Bekräfta avbokning</div>
-    <div class="ib ib-red">⚠️ Denna åtgärd kan inte ångras. Föraren frigörs och kunden notifieras.</div>
+    <div class="ib ib-red">⚠️ Denna åtgärd kan inte ångras.</div>
     <div class="minfo" id="cancelInfo"></div>
     <div class="mbtns">
       <button class="mbtn" style="background:#f1f5f9;color:#64748b" onclick="closeMod('cancelModal')">Avbryt</button>
@@ -266,12 +205,11 @@
   </div>
 </div>
 
-<!-- TOAST -->
 <div class="toast" id="toast"></div>
 
 <script>
 const API = 'https://16.16.153.106.sslip.io';
-const CENTRAL_USER = { email: 'central@waygo.se', password: 'waygo123', name: 'Central Dispatch' };
+const CENTRAL_USER = { email: 'central@waygo.se', password: 'waygo123' };
 
 let allBookings = [];
 let allDrivers = [];
@@ -286,34 +224,28 @@ let driverPositions = {};
 let refreshInterval = null;
 let isLoggedIn = false;
 
-// CHECK LOGIN
 function checkLogin() {
   const loggedIn = localStorage.getItem('waygo_central_auth');
-  if (!loggedIn) {
-    showLoginScreen();
-    return false;
-  }
+  if (!loggedIn) { showLoginScreen(); return false; }
   isLoggedIn = true;
   return true;
 }
 
 function showLoginScreen() {
-  document.getElementById('tabContent').innerHTML = `
-    <div style="min-height:80vh;display:flex;align-items:center;justify-content:center;padding:20px">
-      <div style="background:white;border-radius:16px;padding:32px 24px;width:100%;max-width:400px;border:1px solid #d0d7ea">
-        <div style="text-align:center;margin-bottom:24px">
-          <div style="font-size:48px;color:#0d1b3e">▲</div>
-          <div style="font-size:22px;font-weight:bold;color:#0d1b3e;margin-top:8px">WAYGO Central</div>
-          <div style="color:#64748b;font-size:13px;margin-top:4px">Dispatch Portal</div>
-        </div>
-        <label class="flabel">E-postadress</label>
-        <input class="finput" id="loginEmail" type="email" placeholder="central@waygo.se" value="central@waygo.se"/>
-        <label class="flabel">Lösenord</label>
-        <input class="finput" id="loginPwd" type="password" placeholder="••••••••" value="waygo123" onkeydown="if(event.key==='Enter')doLogin()"/>
-        <div class="ib ib-red" id="loginErr" style="display:none"></div>
-        <button class="btn btn-primary" style="width:100%;padding:14px" onclick="doLogin()">Logga in →</button>
-      </div>
-    </div>`;
+  document.getElementById('tabContent').innerHTML =
+    '<div style="min-height:80vh;display:flex;align-items:center;justify-content:center;padding:20px">' +
+    '<div style="background:white;border-radius:16px;padding:32px 24px;width:100%;max-width:400px;border:1px solid #d0d7ea">' +
+    '<div style="text-align:center;margin-bottom:24px">' +
+    '<div style="font-size:48px;color:#0d1b3e">▲</div>' +
+    '<div style="font-size:22px;font-weight:bold;color:#0d1b3e;margin-top:8px">WAYGO Central</div>' +
+    '<div style="color:#64748b;font-size:13px;margin-top:4px">Dispatch Portal</div></div>' +
+    '<label class="flabel">E-postadress</label>' +
+    '<input class="finput" id="loginEmail" type="email" value="central@waygo.se"/>' +
+    '<label class="flabel">Lösenord</label>' +
+    '<input class="finput" id="loginPwd" type="password" value="waygo123" onkeydown="if(event.key===\'Enter\')doLogin()"/>' +
+    '<div class="ib ib-red" id="loginErr" style="display:none"></div>' +
+    '<button class="btn btn-primary" style="width:100%;padding:14px" onclick="doLogin()">Logga in →</button>' +
+    '</div></div>';
 }
 
 function doLogin() {
@@ -323,7 +255,7 @@ function doLogin() {
   if (email === CENTRAL_USER.email && pwd === CENTRAL_USER.password) {
     localStorage.setItem('waygo_central_auth', '1');
     isLoggedIn = true;
-    document.getElementById('navUser').textContent = CENTRAL_USER.name;
+    document.getElementById('navUser').textContent = 'Central Dispatch';
     init();
   } else {
     if (err) { err.textContent = '⚠️ Fel e-post eller lösenord'; err.style.display = ''; }
@@ -338,10 +270,9 @@ function logout() {
   showLoginScreen();
 }
 
-// INIT
 window.addEventListener('load', () => {
   if (checkLogin()) {
-    document.getElementById('navUser').textContent = CENTRAL_USER.name;
+    document.getElementById('navUser').textContent = 'Central Dispatch';
     init();
   }
 });
@@ -350,7 +281,6 @@ async function init() {
   await loadData();
   connectSocket();
   showTab(0);
-  // Auto refresh every 15 seconds
   if (refreshInterval) clearInterval(refreshInterval);
   refreshInterval = setInterval(async () => {
     await loadData();
@@ -368,84 +298,53 @@ async function loadData() {
     const drvData = await drvRes.json();
     allBookings = bookData.bookings || [];
     allDrivers = drvData.drivers || [];
-  } catch(e) {
-    console.log('Load error:', e);
-  }
+  } catch(e) { console.log('Load error:', e); }
 }
 
-// SOCKET
 function connectSocket() {
   try {
     socket = io(API, { timeout: 5000 });
-
-    socket.on('connect', () => {
-      console.log('Central socket connected');
-      socket.emit('central:join');
-    });
-
-    // New booking arrives
+    socket.on('connect', () => { socket.emit('central:join'); });
     socket.on('booking:new', (booking) => {
       allBookings.unshift(booking);
       showAlert('🚨 Ny bokning! ' + booking.booking_ref + ' · ' + booking.from_address, 'warning');
       showToast('🚨 Ny bokning: ' + booking.booking_ref);
       if (curTab === 0) showTab(0);
     });
-
-    // Booking assigned
     socket.on('booking:assigned', (booking) => {
-      allBookings = allBookings.map(b => b.id === booking.id ? { ...b, ...booking } : b);
+      allBookings = allBookings.map(b => b.id === booking.id ? {...b, ...booking} : b);
       if (curTab === 0) showTab(0);
     });
-
-    // Booking completed — KEY FIX
     socket.on('booking:completed', (booking) => {
-      allBookings = allBookings.map(b => b.id === booking.id ? { ...b, ...booking, status: 'completed' } : b);
-      showAlert('✅ Resa slutförd — ' + booking.booking_ref + ' · ' + (booking.fare_sek || 0) + ' kr', 'success');
+      allBookings = allBookings.map(b => b.id === booking.id ? {...b, ...booking, status:'completed'} : b);
+      allDrivers = allDrivers.map(d => d.id === booking.driver_id ? {...d, status:'available'} : d);
+      showAlert('✅ Resa slutförd — ' + booking.booking_ref + ' · ' + (booking.fare_sek||0) + ' kr', 'success');
       showToast('✅ ' + booking.booking_ref + ' avslutad');
-      // Free up driver
-      allDrivers = allDrivers.map(d =>
-        d.id === booking.driver_id ? { ...d, status: 'available' } : d);
       if (curTab === 0) showTab(0);
       if (curTab === 2) showTab(2);
     });
-
-    // Booking cancelled
     socket.on('booking:cancelled', (data) => {
-      allBookings = allBookings.map(b =>
-        b.id === data.id ? { ...b, status: 'cancelled', driver_id: null, driver_name: null } : b);
+      allBookings = allBookings.map(b => b.id === data.id ? {...b, status:'cancelled', driver_id:null, driver_name:null} : b);
       if (curTab === 0) showTab(0);
     });
-
-    // Cancel request from customer
     socket.on('booking:cancelRequest', (data) => {
-      showAlert('⚠️ Avbokningsförfrågan från kund — Bokning ' + data.bookingId, 'warning');
-      showToast('⚠️ Kund vill avboka bokning ' + data.bookingId);
+      showAlert('⚠️ Avbokningsförfrågan — Bokning ' + data.bookingId, 'warning');
     });
-
-    // Driver location update
     socket.on('driver:location', (data) => {
       driverPositions[data.driverId] = { lat: data.lat, lng: data.lng };
       updateDriverOnMap(data.driverId, data.lat, data.lng);
     });
-
-    // Driver status update
     socket.on('driver:status', (data) => {
-      allDrivers = allDrivers.map(d =>
-        d.id === data.driverId ? { ...d, status: data.status } : d);
+      allDrivers = allDrivers.map(d => d.id === data.driverId ? {...d, status: data.status} : d);
       if (curTab === 2) showTab(2);
     });
-
-    socket.on('disconnect', () => { console.log('Central socket disconnected'); });
-
   } catch(e) { console.log('Socket error:', e); }
 }
 
-// TOAST & ALERT
 function showToast(msg) {
   try {
     const el = document.getElementById('toast');
-    el.textContent = msg;
-    el.classList.add('show');
+    el.textContent = msg; el.classList.add('show');
     setTimeout(() => el.classList.remove('show'), 4000);
   } catch(e) {}
 }
@@ -464,15 +363,9 @@ function hideAlert() {
   if (banner) banner.classList.remove('show');
 }
 
-function closeMod(id) {
-  try { document.getElementById(id).classList.remove('open'); } catch(e) {}
-}
+function closeMod(id) { try { document.getElementById(id).classList.remove('open'); } catch(e) {} }
+function closeMIfOut(e, id) { if (e.target === document.getElementById(id)) closeMod(id); }
 
-function closeMIfOut(e, id) {
-  if (e.target === document.getElementById(id)) closeMod(id);
-}
-
-// TABS
 function showTab(i) {
   try {
     curTab = i;
@@ -486,49 +379,34 @@ function showTab(i) {
   } catch(e) { console.log('showTab error:', e); }
 }
 
-// BOOKINGS TAB
 function tabBookings() {
   const pending = allBookings.filter(b => b.status === 'pending');
   const active = allBookings.filter(b => b.status === 'assigned');
   const completed = allBookings.filter(b => b.status === 'completed');
   const cancelled = allBookings.filter(b => b.status === 'cancelled');
-
   const totalEarnings = completed.reduce((s, b) => s + (b.fare_sek || 0), 0);
-
   return '<div class="page">' +
-    // Stats
     '<div class="stats-grid">' +
     statCard(active.length, 'Aktiva resor', '#1a56db') +
     statCard(pending.length, 'Väntar', '#d97706') +
     statCard(allDrivers.filter(d => d.status === 'available').length, 'Lediga förare', '#15803d') +
     statCard(totalEarnings + ' kr', 'Intäkter idag', '#7c3aed') +
     '</div>' +
-
-    // Pending bookings
     (pending.length > 0 ? '<div class="stitle">🔴 Väntar på förare (' + pending.length + ')</div>' +
     pending.map(b => bookingCard(b)).join('') : '') +
-
-    // Active bookings
     (active.length > 0 ? '<div class="stitle">🔵 Aktiva resor (' + active.length + ')</div>' +
     active.map(b => bookingCard(b)).join('') : '') +
-
-    // Completed
-    (completed.length > 0 ? '<div class="stitle">✅ Avslutade idag (' + completed.length + ')</div>' +
+    (completed.length > 0 ? '<div class="stitle">✅ Avslutade (' + completed.length + ')</div>' +
     completed.slice(0, 10).map(b => bookingCard(b)).join('') : '') +
-
-    // Cancelled
-    (cancelled.length > 0 ? '<div class="stitle" style="margin-top:10px">❌ Avbokade (' + cancelled.length + ')</div>' +
+    (cancelled.length > 0 ? '<div class="stitle">❌ Avbokade (' + cancelled.length + ')</div>' +
     cancelled.slice(0, 5).map(b => bookingCard(b)).join('') : '') +
-
     (allBookings.length === 0 ? '<div class="empty"><div class="empty-icon">📋</div>Inga bokningar ännu</div>' : '') +
-    '<div class="bspace"></div></div>';
+    '<div style="height:80px"></div></div>';
 }
 
 function statCard(val, label, color) {
-  return '<div class="stat-card">' +
-    '<div class="stat-val" style="color:' + color + '">' + val + '</div>' +
-    '<div class="stat-lbl">' + label + '</div>' +
-    '</div>';
+  return '<div class="stat-card"><div class="stat-val" style="color:' + color + '">' + val + '</div>' +
+    '<div class="stat-lbl">' + label + '</div></div>';
 }
 
 function getBadge(status) {
@@ -541,117 +419,148 @@ function getBadge(status) {
 
 function bookingCard(b) {
   const isPre = b.booking_type === 'pre';
-  const cardClass = 'bcard ' + (b.status === 'pending' ? 'pending' : b.status === 'assigned' ? 'assigned' : b.status === 'completed' ? 'completed' : 'cancelled');
-
+  const cardClass = 'bcard ' + (b.status === 'pending' ? 'pending' :
+    b.status === 'assigned' ? 'assigned' :
+    b.status === 'completed' ? 'completed' : 'cancelled');
   let actions = '';
-
   if (b.status === 'pending') {
     actions = '<button class="btn btn-primary btn-sm" onclick="openAssign(' + b.id + ',\'' + b.booking_ref + '\')">Tilldela förare</button>' +
       '<button class="btn btn-danger btn-sm" onclick="openCancel(' + b.id + ',\'' + b.booking_ref + '\')">Avboka</button>';
   } else if (b.status === 'assigned') {
-    actions = '<button class="btn btn-blue btn-sm" onclick="openChat(\'central-driver-' + b.driver_id + '\',\'Förare: ' + (b.driver_name||'') + '\')">💬 Chatta med förare</button>' +
+    actions = '<button class="btn btn-blue btn-sm" onclick="openChat(\'central-driver-' + b.driver_id + '\',\'Förare: ' + (b.driver_name||'') + '\')">💬 Förare</button>' +
       '<button class="btn btn-teal btn-sm" onclick="openChat(\'customer-central-' + b.id + '\',\'Kund: ' + b.customer_name + '\')">💬 Kund</button>' +
       '<button class="btn btn-danger btn-sm" onclick="openCancel(' + b.id + ',\'' + b.booking_ref + '\')">Avboka</button>';
   } else if (b.status === 'completed') {
     actions = '<button class="btn btn-gray btn-sm" onclick="showToast(\'📄 ' + b.booking_ref + ' · ' + (b.fare_sek||0) + ' kr\')">📄 Kvitto</button>';
   }
-
   return '<div class="' + cardClass + '">' +
-    '<div class="btop">' +
-    '<span class="bref">' + b.booking_ref + '</span>' +
+    '<div class="btop"><span class="bref">' + b.booking_ref + '</span>' +
     '<div style="display:flex;gap:4px;align-items:center">' +
     (isPre ? '<span class="badge b-purple">📅 Förbokning</span>' : '') +
     getBadge(b.status) + '</div></div>' +
     (isPre && b.scheduled_at ? '<div style="font-size:11px;color:#7c3aed;font-weight:700;margin-bottom:4px">📅 ' +
-      new Date(b.scheduled_at).toLocaleString('sv-SE', { dateStyle:'medium', timeStyle:'short' }) + '</div>' : '') +
+      new Date(b.scheduled_at).toLocaleString('sv-SE', {dateStyle:'medium',timeStyle:'short'}) + '</div>' : '') +
     '<div class="broute">📍 ' + b.from_address + ' → 🏁 ' + b.to_address + '</div>' +
-    '<div class="bdetail">' +
-    '👤 ' + b.customer_name + ' · ' + (b.customer_phone || '') + '<br>' +
-    (b.driver_name ? '🚖 ' + b.driver_name + ' · ' : '') +
-    b.fare_sek + ' kr · ' + b.payment_method + '<br>' +
-    '🕐 ' + new Date(b.created_at).toLocaleString('sv-SE', { dateStyle:'short', timeStyle:'short' }) +
-    '</div>' +
+    '<div class="bdetail">👤 ' + b.customer_name + ' · ' + (b.customer_phone||'') + '<br>' +
+    (b.driver_name ? '🚖 ' + b.driver_name + ' · ' : '') + b.fare_sek + ' kr · ' + b.payment_method + '<br>' +
+    '🕐 ' + new Date(b.created_at).toLocaleString('sv-SE', {dateStyle:'short',timeStyle:'short'}) + '</div>' +
     (actions ? '<div class="bactions">' + actions + '</div>' : '') +
     '</div>';
 }
 
-// MAP TAB
 function tabMap() {
   const availDrivers = allDrivers.filter(d => d.status !== 'offline');
   return '<div class="page">' +
     '<div class="stitle">' + availDrivers.length + ' fordon aktiva</div>' +
     '<div class="mmap" id="liveMap">' +
     '<div class="mmap-bg"></div>' +
-    '<div class="mroad-h" style="top:30%"></div>' +
-    '<div class="mroad-h" style="top:55%"></div>' +
-    '<div class="mroad-h" style="top:75%"></div>' +
-    '<div class="mroad-v" style="left:25%"></div>' +
-    '<div class="mroad-v" style="left:50%"></div>' +
-    '<div class="mroad-v" style="left:75%"></div>' +
+    '<div class="mroad-h" style="top:30%"></div><div class="mroad-h" style="top:55%"></div><div class="mroad-h" style="top:75%"></div>' +
+    '<div class="mroad-v" style="left:25%"></div><div class="mroad-v" style="left:50%"></div><div class="mroad-v" style="left:75%"></div>' +
     '<div class="map-live-badge">🔴 Live · ' + availDrivers.length + ' fordon</div>' +
     availDrivers.map((d, i) => {
       const pos = driverPositions[d.id];
-      const x = pos ? Math.min(85, Math.max(15, ((pos.lng - 17.8) / (18.2 - 17.8)) * 80 + 10)) : (20 + i * 25);
-      const y = pos ? Math.min(85, Math.max(15, ((59.5 - pos.lat) / (59.5 - 59.2)) * 80 + 10)) : (30 + i * 20);
-      const color = d.status === 'available' ? '#22c55e' : d.status === 'busy' ? '#f97316' : '#64748b';
+      const x = pos ? Math.min(85, Math.max(15, ((pos.lng-17.8)/(18.2-17.8))*80+10)) : (20+i*25);
+      const y = pos ? Math.min(85, Math.max(15, ((59.5-pos.lat)/(59.5-59.2))*80+10)) : (30+i*20);
+      const color = d.status==='available'?'#22c55e':d.status==='busy'?'#f97316':'#64748b';
       return '<div class="dmap-marker" id="dmarker-' + d.id + '" style="left:' + x + '%;top:' + y + '%;border-color:' + color + '">🚖</div>' +
         '<div class="dmap-label" id="dlabel-' + d.id + '" style="left:' + x + '%;top:calc(' + y + '% + 22px)">' + d.name.split(' ')[0] + '</div>';
-    }).join('') +
-    '</div>' +
+    }).join('') + '</div>' +
     '<div class="stitle">Förare på kartan</div>' +
     availDrivers.map(d => {
-      const dotClass = d.status === 'available' ? 'dot-available' : d.status === 'busy' ? 'dot-busy' : 'dot-offline';
-      const statusText = d.status === 'available' ? 'Ledig' : d.status === 'busy' ? 'På uppdrag' : 'Offline';
-      return '<div class="drv-card">' +
-        '<div class="drv-avatar">' + d.name.charAt(0) + '</div>' +
-        '<div style="flex:1">' +
-        '<div style="font-size:14px;font-weight:700;color:#0d1b3e">' + d.name + '</div>' +
-        '<div style="font-size:12px;color:#64748b">' + d.plate + ' · ' + d.city + '</div>' +
-        '</div>' +
+      const dotClass = d.status==='available'?'dot-available':d.status==='busy'?'dot-busy':'dot-offline';
+      const statusText = d.status==='available'?'Ledig':d.status==='busy'?'På uppdrag':'Offline';
+      return '<div class="drv-card"><div class="drv-avatar">' + d.name.charAt(0) + '</div>' +
+        '<div style="flex:1"><div style="font-size:14px;font-weight:700;color:#0d1b3e">' + d.name + '</div>' +
+        '<div style="font-size:12px;color:#64748b">' + d.plate + ' · ' + (d.city||'') + '</div></div>' +
         '<div style="display:flex;align-items:center;gap:6px">' +
         '<div class="drv-status-dot ' + dotClass + '"></div>' +
-        '<span style="font-size:12px;color:#64748b">' + statusText + '</span>' +
-        '</div></div>';
+        '<span style="font-size:12px;color:#64748b">' + statusText + '</span></div></div>';
     }).join('') +
-    '<div class="bspace"></div></div>';
+    '<div style="height:80px"></div></div>';
 }
 
 function updateDriverOnMap(driverId, lat, lng) {
   const marker = document.getElementById('dmarker-' + driverId);
   const label = document.getElementById('dlabel-' + driverId);
   if (!marker) return;
-  const x = Math.min(85, Math.max(15, ((lng - 17.8) / (18.2 - 17.8)) * 80 + 10));
-  const y = Math.min(85, Math.max(15, ((59.5 - lat) / (59.5 - 59.2)) * 80 + 10));
-  marker.style.left = x + '%';
-  marker.style.top = y + '%';
+  const x = Math.min(85, Math.max(15, ((lng-17.8)/(18.2-17.8))*80+10));
+  const y = Math.min(85, Math.max(15, ((59.5-lat)/(59.5-59.2))*80+10));
+  marker.style.left = x + '%'; marker.style.top = y + '%';
   if (label) { label.style.left = x + '%'; label.style.top = 'calc(' + y + '% + 22px)'; }
 }
 
-// DRIVERS TAB
 function tabDrivers() {
   return '<div class="page">' +
+    // ADD DRIVER FORM
+    '<div class="card">' +
+    '<div class="stitle">➕ Lägg till ny förare</div>' +
+    '<input class="finput" id="newName" placeholder="Fullständigt namn *"/>' +
+    '<input class="finput" id="newEmail" type="email" placeholder="E-post *"/>' +
+    '<input class="finput" id="newPhone" placeholder="Telefon *"/>' +
+    '<input class="finput" id="newPlate" placeholder="Registreringsskylt * (ABC 123)"/>' +
+    '<input class="finput" id="newTaxi" placeholder="Taxinummer (TL-XXXX)"/>' +
+    '<input class="finput" id="newCity" placeholder="Stad"/>' +
+    '<input class="finput" id="newPwd" type="password" placeholder="Lösenord *"/>' +
+    '<div class="ib ib-red" id="drvErr" style="display:none"></div>' +
+    '<button class="btn btn-primary" id="addDrvBtn" onclick="addDriver()">Lägg till förare →</button>' +
+    '</div>' +
+    // DRIVER LIST
     '<div class="stitle">Alla förare (' + allDrivers.length + ')</div>' +
     allDrivers.map(d => {
-      const dotClass = d.status === 'available' ? 'dot-available' : d.status === 'busy' ? 'dot-busy' : 'dot-offline';
-      const statusText = d.status === 'available' ? '🟢 Ledig' : d.status === 'busy' ? '🟠 På uppdrag' : '⚫ Offline';
-      const activeBook = allBookings.find(b => b.driver_id === d.id && b.status === 'assigned');
+      const dotClass = d.status==='available'?'dot-available':d.status==='busy'?'dot-busy':'dot-offline';
+      const statusText = d.status==='available'?'🟢 Ledig':d.status==='busy'?'🟠 På uppdrag':'⚫ Offline';
+      const activeBook = allBookings.find(b => b.driver_id===d.id && b.status==='assigned');
       return '<div class="drv-card" style="align-items:flex-start">' +
         '<div class="drv-avatar">' + d.name.charAt(0) + '</div>' +
         '<div style="flex:1">' +
         '<div style="font-size:14px;font-weight:700;color:#0d1b3e">' + d.name + '</div>' +
-        '<div style="font-size:12px;color:#64748b;margin-bottom:4px">' + d.plate + ' · ' + (d.taxiNr || '') + ' · ' + d.city + '</div>' +
-        '<div style="font-size:12px;color:#64748b;margin-bottom:6px">' + statusText + ' · ⭐ ' + (d.rating || '—') + '</div>' +
-        (activeBook ? '<div style="font-size:11px;color:#1a56db;background:#dbeafe;padding:4px 8px;border-radius:6px;display:inline-block">' +
+        '<div style="font-size:12px;color:#64748b;margin-bottom:4px">' + d.plate + ' · ' + (d.taxi_nr||'') + ' · ' + (d.city||'') + '</div>' +
+        '<div style="font-size:12px;color:#64748b;margin-bottom:6px">' + statusText + ' · ⭐ ' + (d.rating||'—') + '</div>' +
+        (activeBook ? '<div style="font-size:11px;color:#1a56db;background:#dbeafe;padding:4px 8px;border-radius:6px;display:inline-block;margin-bottom:6px">' +
           '📍 ' + activeBook.from_address + ' → ' + activeBook.to_address + '</div>' : '') +
-        '<div style="display:flex;gap:6px;margin-top:8px">' +
+        '<div style="display:flex;gap:6px;margin-top:6px">' +
         '<button class="btn btn-primary btn-sm" onclick="openChat(\'central-driver-' + d.id + '\',\'' + d.name + '\')">💬 Chatta</button>' +
         '</div></div></div>';
     }).join('') +
-    (allDrivers.length === 0 ? '<div class="empty"><div class="empty-icon">🚖</div>Inga förare registrerade</div>' : '') +
-    '<div class="bspace"></div></div>';
+    (allDrivers.length===0 ? '<div class="empty"><div class="empty-icon">🚖</div>Inga förare registrerade</div>' : '') +
+    '<div style="height:80px"></div></div>';
 }
 
-// CHAT TAB
+async function addDriver() {
+  const name = document.getElementById('newName')?.value.trim();
+  const email = document.getElementById('newEmail')?.value.trim();
+  const phone = document.getElementById('newPhone')?.value.trim();
+  const plate = document.getElementById('newPlate')?.value.trim();
+  const taxi = document.getElementById('newTaxi')?.value.trim();
+  const city = document.getElementById('newCity')?.value.trim();
+  const pwd = document.getElementById('newPwd')?.value.trim();
+  const err = document.getElementById('drvErr');
+  const btn = document.getElementById('addDrvBtn');
+  if (!name||!email||!phone||!plate||!pwd) {
+    err.textContent = '⚠️ Fyll i alla obligatoriska fält (*)';
+    err.style.display = ''; return;
+  }
+  btn.textContent = 'Lägger till...'; btn.disabled = true; err.style.display = 'none';
+  try {
+    const res = await fetch(API + '/drivers/add', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name, email, phone, plate, taxi_nr:taxi, city, password:pwd })
+    });
+    const data = await res.json();
+    if (data.driver) {
+      allDrivers.push(data.driver);
+      showToast('✅ ' + name + ' tillagd som förare!');
+      showAlert('✅ Ny förare: ' + name, 'success');
+      showTab(2);
+    } else {
+      err.textContent = '⚠️ ' + (data.error || 'Kunde inte lägga till');
+      err.style.display = '';
+    }
+  } catch(e) { err.textContent = '⚠️ Nätverksfel'; err.style.display = ''; }
+  btn.textContent = 'Lägg till förare →'; btn.disabled = false;
+}
+
 function tabChat() {
   const activeBookings = allBookings.filter(b => b.status === 'assigned');
   return '<div class="page">' +
@@ -669,17 +578,17 @@ function tabChat() {
       '<div style="font-size:12px;color:#64748b">' + b.booking_ref + ' · ' + b.customer_phone + '</div></div>' +
       '<div style="margin-left:auto;color:#94a3b8;font-size:18px">›</div></div>'
     ).join('') : '') +
-    '<div class="bspace"></div></div>';
+    '<div style="height:80px"></div></div>';
 }
 
-// ASSIGN DRIVER
 function openAssign(bookingId, bookingRef) {
-  assignBookingId = bookingId;
-  assignBookingRef = bookingRef;
+  assignBookingId = bookingId; assignBookingRef = bookingRef;
   const booking = allBookings.find(b => b.id === bookingId);
   const infoEl = document.getElementById('assignInfo');
   const listEl = document.getElementById('assignDriverList');
-  if (infoEl) infoEl.innerHTML = '<strong>Bokning:</strong> ' + bookingRef + '<br><strong>Från:</strong> ' + (booking?.from_address||'') + '<br><strong>Till:</strong> ' + (booking?.to_address||'');
+  if (infoEl) infoEl.innerHTML = '<strong>Bokning:</strong> ' + bookingRef +
+    '<br><strong>Från:</strong> ' + (booking?.from_address||'') +
+    '<br><strong>Till:</strong> ' + (booking?.to_address||'');
   const available = allDrivers.filter(d => d.status === 'available');
   if (listEl) {
     if (available.length === 0) {
@@ -706,27 +615,23 @@ async function doAssign(driverId, driverName) {
       body: JSON.stringify({ driver_id: driverId })
     });
     if (res.ok) {
-      allBookings = allBookings.map(b =>
-        b.id === assignBookingId ? { ...b, status: 'assigned', driver_id: driverId, driver_name: driverName } : b);
-      allDrivers = allDrivers.map(d => d.id === driverId ? { ...d, status: 'busy' } : d);
+      allBookings = allBookings.map(b => b.id===assignBookingId ?
+        {...b, status:'assigned', driver_id:driverId, driver_name:driverName} : b);
+      allDrivers = allDrivers.map(d => d.id===driverId ? {...d, status:'busy'} : d);
       showAlert('✅ ' + assignBookingRef + ' tilldelad till ' + driverName, 'success');
       showToast('✅ Tilldelad: ' + driverName);
       showTab(0);
-    } else {
-      showToast('⚠️ Kunde inte tilldela');
-    }
+    } else { showToast('⚠️ Kunde inte tilldela'); }
   } catch(e) { showToast('⚠️ Nätverksfel'); }
 }
 
-// CANCEL
 function openCancel(bookingId, bookingRef) {
-  cancelBookingId = bookingId;
-  cancelBookingRef = bookingRef;
+  cancelBookingId = bookingId; cancelBookingRef = bookingRef;
   const booking = allBookings.find(b => b.id === bookingId);
   const infoEl = document.getElementById('cancelInfo');
-  if (infoEl) infoEl.innerHTML = '<strong>Bokning:</strong> ' + bookingRef + '<br>' +
-    '<strong>Kund:</strong> ' + (booking?.customer_name||'') + '<br>' +
-    '<strong>Förare:</strong> ' + (booking?.driver_name||'Ingen');
+  if (infoEl) infoEl.innerHTML = '<strong>Bokning:</strong> ' + bookingRef +
+    '<br><strong>Kund:</strong> ' + (booking?.customer_name||'') +
+    '<br><strong>Förare:</strong> ' + (booking?.driver_name||'Ingen');
   document.getElementById('cancelModal').classList.add('open');
 }
 
@@ -737,10 +642,10 @@ async function doCancel() {
     if (res.ok) {
       const booking = allBookings.find(b => b.id === cancelBookingId);
       if (booking?.driver_id) {
-        allDrivers = allDrivers.map(d => d.id === booking.driver_id ? { ...d, status: 'available' } : d);
+        allDrivers = allDrivers.map(d => d.id===booking.driver_id ? {...d, status:'available'} : d);
       }
-      allBookings = allBookings.map(b =>
-        b.id === cancelBookingId ? { ...b, status: 'cancelled', driver_id: null, driver_name: null } : b);
+      allBookings = allBookings.map(b => b.id===cancelBookingId ?
+        {...b, status:'cancelled', driver_id:null, driver_name:null} : b);
       showAlert('Bokning ' + cancelBookingRef + ' avbokad', 'info');
       showToast('✓ ' + cancelBookingRef + ' avbokad');
       showTab(0);
@@ -748,7 +653,6 @@ async function doCancel() {
   } catch(e) { showToast('⚠️ Nätverksfel'); }
 }
 
-// CHAT
 function openChat(threadKey, personName) {
   currentChatKey = threadKey;
   document.getElementById('chatTitle').textContent = '💬 ' + personName;
@@ -770,7 +674,7 @@ async function loadChat(threadKey) {
     }
     el.innerHTML = msgs.map(m => {
       const mine = m.sender_role === 'central';
-      const avClass = m.sender_role === 'driver' ? 'drv' : m.sender_role === 'customer' ? 'cus' : '';
+      const avClass = m.sender_role==='driver'?'drv':m.sender_role==='customer'?'cus':'';
       return '<div class="cmsg ' + (mine?'mine':'other') + '">' +
         '<div class="cav ' + avClass + '">' + (m.sender_name?.charAt(0)||'?') + '</div>' +
         '<div style="max-width:72%"><div style="font-size:10px;color:#94a3b8;margin-bottom:2px;text-align:' + (mine?'right':'left') + '">' + m.sender_name + '</div>' +
@@ -790,7 +694,9 @@ async function sendChat() {
   const el = document.getElementById('chatMessages');
   const msg = document.createElement('div');
   msg.className = 'cmsg mine';
-  msg.innerHTML = '<div class="cav">C</div><div style="max-width:72%"><div style="font-size:10px;color:#94a3b8;margin-bottom:2px;text-align:right">Central</div><div class="cbubble">' + text + '</div></div>';
+  msg.innerHTML = '<div class="cav">C</div><div style="max-width:72%">' +
+    '<div style="font-size:10px;color:#94a3b8;margin-bottom:2px;text-align:right">Central</div>' +
+    '<div class="cbubble">' + text + '</div></div>';
   el.appendChild(msg); el.scrollTop = el.scrollHeight;
   if (input) input.value = '';
   try {

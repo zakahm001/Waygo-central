@@ -16,7 +16,8 @@
     .nav-live-dot{width:8px;height:8px;border-radius:50%;background:#22c55e;animation:pulse 2s infinite}
     @keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
     .nav-right{display:flex;align-items:center;gap:12px}
-    .nav-user{color:#4a6090;font-size:13px}
+    .nav-user{color:#fbbf24;font-size:13px;font-weight:700}
+    .nav-role{color:#4a6090;font-size:11px;margin-left:4px}
     .nav-logout{color:#4a6090;font-size:12px;cursor:pointer;background:none;border:none;padding:4px}
     .alert-banner{padding:12px 20px;font-size:13px;font-weight:700;
       display:none;align-items:center;justify-content:space-between}
@@ -25,11 +26,17 @@
     .alert-info{background:#dbeafe;color:#1a56db;border-bottom:1px solid #93c5fd}
     .alert-warning{background:#fef3c7;color:#d97706;border-bottom:1px solid #fde68a}
     .alert-close{background:none;border:none;cursor:pointer;font-size:16px;color:inherit}
+    .tabbar{display:flex;background:white;border-bottom:1px solid #d0d7ea;padding:0 16px;
+      position:sticky;top:56px;z-index:100;overflow-x:auto}
+    .tab{flex-shrink:0;padding:13px 12px;text-align:center;font-size:13px;font-weight:500;
+      color:#64748b;cursor:pointer;border-bottom:2.5px solid transparent;
+      background:none;border-top:none;border-left:none;border-right:none;white-space:nowrap}
+    .tab.on{color:#0d1b3e;font-weight:700;border-bottom-color:#0d1b3e}
     .page{padding:16px;padding-bottom:90px}
     .stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px}
     .stat-card{background:white;border-radius:12px;padding:14px 12px;
       border:1px solid #d0d7ea;text-align:center}
-    .stat-val{font-size:22px;font-weight:800;color:#0d1b3e}
+    .stat-val{font-size:22px;font-weight:800}
     .stat-lbl{font-size:10px;color:#64748b;text-transform:uppercase;letter-spacing:1px;margin-top:2px}
     .card{background:white;border-radius:14px;padding:18px;margin-bottom:14px;
       border:1px solid #d0d7ea;box-shadow:0 1px 4px rgba(0,0,0,.06)}
@@ -40,8 +47,7 @@
     .bcard.assigned{border-color:#1a56db;box-shadow:0 0 0 3px #dbeafe}
     .bcard.completed{border-color:#15803d;box-shadow:0 0 0 3px #dcfce7}
     .bcard.cancelled{opacity:.7}
-    .btop{display:flex;justify-content:space-between;align-items:center;
-      margin-bottom:8px;flex-wrap:wrap;gap:4px}
+    .btop{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;flex-wrap:wrap;gap:4px}
     .bref{font-size:13px;font-weight:700;color:#1a56db}
     .broute{font-size:13px;font-weight:600;color:#0d1b3e;margin-bottom:4px}
     .bdetail{font-size:11px;color:#64748b;margin-bottom:10px}
@@ -52,8 +58,9 @@
     .b-completed{background:#dcfce7;color:#15803d;border:1px solid #86efac}
     .b-cancelled{background:#f1f5f9;color:#64748b;border:1px solid #e2e8f0}
     .b-purple{background:#ede9fe;color:#7c3aed;border:1px solid #ddd6fe}
-    .btn{padding:10px 16px;border-radius:8px;font-size:13px;font-weight:700;
-      border:none;cursor:pointer;text-align:center}
+    .b-admin{background:#fef3c7;color:#d97706;border:1px solid #fde68a}
+    .b-disp{background:#dbeafe;color:#1a56db;border:1px solid #93c5fd}
+    .btn{padding:10px 16px;border-radius:8px;font-size:13px;font-weight:700;border:none;cursor:pointer;text-align:center}
     .btn:disabled{opacity:.5;cursor:default}
     .btn-primary{background:#0d1b3e;color:#fbbf24}
     .btn-success{background:#15803d;color:white}
@@ -61,6 +68,7 @@
     .btn-gray{background:#f1f5f9;color:#64748b}
     .btn-teal{background:#0d9488;color:white}
     .btn-blue{background:#1a56db;color:white}
+    .btn-yellow{background:#fbbf24;color:#0d1b3e}
     .btn-sm{padding:7px 12px;font-size:12px}
     .mmap{background:#d4e8d4;border-radius:10px;height:200px;position:relative;
       overflow:hidden;margin-bottom:14px;border:1px solid #b8d4b8}
@@ -73,10 +81,9 @@
     .dmap-marker{position:absolute;width:36px;height:36px;border-radius:50%;
       background:#0d1b3e;border:3px solid #fbbf24;display:flex;align-items:center;
       justify-content:center;font-size:16px;transform:translate(-50%,-50%);
-      transition:left 2s ease,top 2s ease;box-shadow:0 2px 8px rgba(0,0,0,.3)}
-    .dmap-label{position:absolute;background:#0d1b3e;color:#fbbf24;
-      font-size:9px;font-weight:700;padding:2px 5px;border-radius:4px;
-      transform:translateX(-50%);white-space:nowrap}
+      transition:left 2s ease,top 2s ease}
+    .dmap-label{position:absolute;background:#0d1b3e;color:#fbbf24;font-size:9px;font-weight:700;
+      padding:2px 5px;border-radius:4px;transform:translateX(-50%);white-space:nowrap}
     .map-live-badge{position:absolute;top:8px;left:8px;background:rgba(13,27,62,.9);
       color:#fbbf24;border-radius:6px;padding:4px 10px;font-size:11px;font-weight:bold}
     .moverlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);
@@ -90,14 +97,12 @@
     .minfo strong{color:#0d1b3e}
     .mbtns{display:flex;gap:10px}
     .mbtn{flex:1;padding:14px;border-radius:10px;font-size:14px;font-weight:bold;border:none;cursor:pointer}
-    .chatbox{height:200px;overflow-y:auto;padding:8px 0;
-      display:flex;flex-direction:column;gap:8px;margin-bottom:10px}
+    .chatbox{height:200px;overflow-y:auto;padding:8px 0;display:flex;flex-direction:column;gap:8px;margin-bottom:10px}
     .cmsg{display:flex;gap:8px;align-items:flex-end}
     .cmsg.mine{flex-direction:row-reverse}
     .cav{width:28px;height:28px;border-radius:50%;background:#0d1b3e;color:#fbbf24;
       display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:bold;flex-shrink:0}
-    .cav.drv{background:#1a56db}
-    .cav.cus{background:#0d9488}
+    .cav.drv{background:#1a56db}.cav.cus{background:#0d9488}
     .cbubble{max-width:72%;padding:8px 12px;border-radius:12px;font-size:13px;line-height:1.4}
     .cmsg.mine .cbubble{background:#0d1b3e;color:#fbbf24;border-radius:12px 12px 4px 12px}
     .cmsg.other .cbubble{background:#f1f5f9;color:#0d1b3e;border-radius:12px 12px 12px 4px}
@@ -106,21 +111,17 @@
       background:#f8fafc;font-size:13px;color:#0d1b3e;outline:none}
     .csend{width:38px;height:38px;border-radius:50%;background:#0d1b3e;border:none;
       color:#fbbf24;font-size:15px;cursor:pointer;flex-shrink:0}
-    .tabbar{display:flex;background:white;border-bottom:1px solid #d0d7ea;padding:0 16px;
-      position:sticky;top:56px;z-index:100}
-    .tab{flex:1;padding:13px 8px;text-align:center;font-size:13px;font-weight:500;
-      color:#64748b;cursor:pointer;border-bottom:2.5px solid transparent;
-      background:none;border-top:none;border-left:none;border-right:none}
-    .tab.on{color:#0d1b3e;font-weight:700;border-bottom-color:#0d1b3e}
     .drv-card{background:white;border-radius:12px;padding:14px;margin-bottom:10px;
       border:1px solid #d0d7ea;display:flex;align-items:center;gap:12px}
     .drv-avatar{width:44px;height:44px;border-radius:50%;background:#0d1b3e;
       color:#fbbf24;display:flex;align-items:center;justify-content:center;
       font-size:18px;font-weight:bold;flex-shrink:0}
-    .drv-status-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
-    .dot-available{background:#22c55e}
-    .dot-busy{background:#f97316}
-    .dot-offline{background:#64748b}
+    .dot-available{background:#22c55e}.dot-busy{background:#f97316}.dot-offline{background:#64748b}
+    .staff-card{background:white;border-radius:12px;padding:14px;margin-bottom:10px;
+      border:1px solid #d0d7ea;display:flex;align-items:center;gap:12px}
+    .staff-avatar{width:44px;height:44px;border-radius:50%;background:#7c3aed;
+      color:white;display:flex;align-items:center;justify-content:center;
+      font-size:18px;font-weight:bold;flex-shrink:0}
     .toast{position:fixed;top:70px;left:20px;right:20px;background:#0d1b3e;
       color:#fbbf24;padding:14px 20px;border-radius:12px;font-size:14px;
       font-weight:bold;text-align:center;z-index:999;display:none;
@@ -132,13 +133,12 @@
       background:#f8fafc;color:#0d1b3e;font-size:14px;outline:none;
       box-sizing:border-box;margin-bottom:10px}
     .finput:focus{border-color:#0d1b3e}
-    .empty{text-align:center;padding:40px 20px;color:#94a3b8;font-size:14px}
-    .empty-icon{font-size:48px;margin-bottom:12px}
+    select.finput{appearance:none}
     .ib{border-radius:8px;padding:10px 12px;font-size:12px;margin-bottom:10px}
     .ib-blue{background:#dbeafe;border:1px solid #93c5fd;color:#1a56db}
-    .ib-green{background:#dcfce7;border:1px solid #86efac;color:#15803d}
-    .ib-yellow{background:#fef3c7;border:1px solid #fde68a;color:#d97706}
     .ib-red{background:#fee2e2;border:1px solid #fecaca;color:#dc2626}
+    .ib-yellow{background:#fef3c7;border:1px solid #fde68a;color:#d97706}
+    .empty{text-align:center;padding:40px 20px;color:#94a3b8;font-size:14px}
   </style>
 </head>
 <body>
@@ -157,11 +157,12 @@
   <button class="alert-close" onclick="hideAlert()">✕</button>
 </div>
 
-<div class="tabbar">
+<div class="tabbar" id="tabBar">
   <button class="tab on" id="tab0" onclick="showTab(0)">📋 Bokningar</button>
   <button class="tab" id="tab1" onclick="showTab(1)">🗺️ Karta</button>
   <button class="tab" id="tab2" onclick="showTab(2)">🚖 Förare</button>
   <button class="tab" id="tab3" onclick="showTab(3)">💬 Chatt</button>
+  <button class="tab" id="tab4" onclick="showTab(4)">👥 Personal</button>
 </div>
 
 <div id="tabContent"></div>
@@ -205,14 +206,56 @@
   </div>
 </div>
 
+<!-- EDIT STAFF MODAL -->
+<div class="moverlay" id="editStaffModal" onclick="closeMIfOut(event,'editStaffModal')">
+  <div class="mbox">
+    <div class="mtitle" id="editStaffTitle">Redigera personal</div>
+    <input type="hidden" id="editStaffId"/>
+    <label class="flabel">Namn</label>
+    <input class="finput" id="editStaffName" type="text" placeholder="Fullständigt namn"/>
+    <label class="flabel">E-post</label>
+    <input class="finput" id="editStaffEmail" type="email" placeholder="email@waygo.se"/>
+    <label class="flabel">Roll</label>
+    <select class="finput" id="editStaffRole">
+      <option value="dispatcher">Dispatcher</option>
+      <option value="admin">Admin</option>
+    </select>
+    <label class="flabel">Nytt lösenord (lämna tomt för att behålla)</label>
+    <input class="finput" id="editStaffPwd" type="password" placeholder="Nytt lösenord..."/>
+    <div class="ib ib-red" id="editStaffErr" style="display:none"></div>
+    <div class="mbtns">
+      <button class="mbtn" style="background:#f1f5f9;color:#64748b" onclick="closeMod('editStaffModal')">Avbryt</button>
+      <button class="mbtn" style="background:#0d1b3e;color:#fbbf24" onclick="saveStaff()">Spara</button>
+    </div>
+  </div>
+</div>
+
+<!-- CHANGE OWN PASSWORD MODAL -->
+<div class="moverlay" id="changePwdModal" onclick="closeMIfOut(event,'changePwdModal')">
+  <div class="mbox">
+    <div class="mtitle">🔒 Ändra lösenord</div>
+    <label class="flabel">Nuvarande lösenord</label>
+    <input class="finput" id="curPwd" type="password" placeholder="••••••••"/>
+    <label class="flabel">Nytt lösenord</label>
+    <input class="finput" id="newPwd" type="password" placeholder="••••••••"/>
+    <label class="flabel">Bekräfta nytt lösenord</label>
+    <input class="finput" id="confPwd" type="password" placeholder="••••••••"/>
+    <div class="ib ib-red" id="pwdErr" style="display:none"></div>
+    <div class="mbtns">
+      <button class="mbtn" style="background:#f1f5f9;color:#64748b" onclick="closeMod('changePwdModal')">Avbryt</button>
+      <button class="mbtn" style="background:#0d1b3e;color:#fbbf24" onclick="doChangePwd()">Spara</button>
+    </div>
+  </div>
+</div>
+
 <div class="toast" id="toast"></div>
 
 <script>
 const API = 'https://16.16.153.106.sslip.io';
-const CENTRAL_USER = { email: 'central@waygo.se', password: 'waygo123' };
 
 let allBookings = [];
 let allDrivers = [];
+let allStaff = [];
 let curTab = 0;
 let assignBookingId = null;
 let assignBookingRef = null;
@@ -222,13 +265,23 @@ let currentChatKey = null;
 let socket = null;
 let driverPositions = {};
 let refreshInterval = null;
-let isLoggedIn = false;
+let staffUser = null;
+let staffToken = null;
 
+// ── LOGIN ──
 function checkLogin() {
-  const loggedIn = localStorage.getItem('waygo_central_auth');
-  if (!loggedIn) { showLoginScreen(); return false; }
-  isLoggedIn = true;
-  return true;
+  const saved = localStorage.getItem('waygo_staff');
+  const savedTok = localStorage.getItem('waygo_staff_token');
+  if (saved && savedTok) {
+    try {
+      staffUser = JSON.parse(saved);
+      staffToken = savedTok;
+      updateNavbar();
+      return true;
+    } catch(e) {}
+  }
+  showLoginScreen();
+  return false;
 }
 
 function showLoginScreen() {
@@ -240,41 +293,65 @@ function showLoginScreen() {
     '<div style="font-size:22px;font-weight:bold;color:#0d1b3e;margin-top:8px">WAYGO Central</div>' +
     '<div style="color:#64748b;font-size:13px;margin-top:4px">Dispatch Portal</div></div>' +
     '<label class="flabel">E-postadress</label>' +
-    '<input class="finput" id="loginEmail" type="email" value="central@waygo.se"/>' +
+    '<input class="finput" id="loginEmail" type="email" placeholder="din@waygo.se"/>' +
     '<label class="flabel">Lösenord</label>' +
-    '<input class="finput" id="loginPwd" type="password" value="waygo123" onkeydown="if(event.key===\'Enter\')doLogin()"/>' +
+    '<input class="finput" id="loginPwd" type="password" placeholder="••••••••" onkeydown="if(event.key===\'Enter\')doLogin()"/>' +
     '<div class="ib ib-red" id="loginErr" style="display:none"></div>' +
     '<button class="btn btn-primary" style="width:100%;padding:14px" onclick="doLogin()">Logga in →</button>' +
     '</div></div>';
 }
 
-function doLogin() {
+async function doLogin() {
   const email = document.getElementById('loginEmail')?.value.trim();
   const pwd = document.getElementById('loginPwd')?.value.trim();
   const err = document.getElementById('loginErr');
-  if (email === CENTRAL_USER.email && pwd === CENTRAL_USER.password) {
-    localStorage.setItem('waygo_central_auth', '1');
-    isLoggedIn = true;
-    document.getElementById('navUser').textContent = 'Central Dispatch';
-    init();
-  } else {
-    if (err) { err.textContent = '⚠️ Fel e-post eller lösenord'; err.style.display = ''; }
+  if (!email || !pwd) {
+    if (err) { err.textContent = '⚠️ Fyll i e-post och lösenord'; err.style.display = ''; }
+    return;
+  }
+  try {
+    const res = await fetch(API + '/staff/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password: pwd })
+    });
+    const data = await res.json();
+    if (data.token) {
+      staffUser = data.staff;
+      staffToken = data.token;
+      localStorage.setItem('waygo_staff', JSON.stringify(staffUser));
+      localStorage.setItem('waygo_staff_token', staffToken);
+      updateNavbar();
+      init();
+    } else {
+      if (err) { err.textContent = '⚠️ ' + (data.error || 'Fel uppgifter'); err.style.display = ''; }
+    }
+  } catch(e) {
+    if (err) { err.textContent = '⚠️ Kunde inte ansluta'; err.style.display = ''; }
   }
 }
 
 function logout() {
-  localStorage.removeItem('waygo_central_auth');
-  isLoggedIn = false;
+  localStorage.removeItem('waygo_staff');
+  localStorage.removeItem('waygo_staff_token');
+  staffUser = null; staffToken = null;
   if (refreshInterval) clearInterval(refreshInterval);
   if (socket) socket.disconnect();
   showLoginScreen();
 }
 
+function updateNavbar() {
+  if (!staffUser) return;
+  const nu = document.getElementById('navUser');
+  if (nu) nu.innerHTML = staffUser.name +
+    '<span class="nav-role">(' + (staffUser.role === 'admin' ? 'Admin' : 'Dispatcher') + ')</span>';
+  // Show/hide staff tab based on role
+  const t4 = document.getElementById('tab4');
+  if (t4) t4.style.display = staffUser.role === 'admin' ? '' : 'none';
+}
+
 window.addEventListener('load', () => {
-  if (checkLogin()) {
-    document.getElementById('navUser').textContent = 'Central Dispatch';
-    init();
-  }
+  if (checkLogin()) init();
 });
 
 async function init() {
@@ -298,9 +375,18 @@ async function loadData() {
     const drvData = await drvRes.json();
     allBookings = bookData.bookings || [];
     allDrivers = drvData.drivers || [];
+    // Load staff if admin
+    if (staffUser?.role === 'admin' && staffToken) {
+      const staffRes = await fetch(API + '/staff', {
+        headers: { 'Authorization': 'Bearer ' + staffToken }
+      });
+      const staffData = await staffRes.json();
+      allStaff = staffData.staff || [];
+    }
   } catch(e) { console.log('Load error:', e); }
 }
 
+// ── SOCKET ──
 function connectSocket() {
   try {
     socket = io(API, { timeout: 5000 });
@@ -312,19 +398,19 @@ function connectSocket() {
       if (curTab === 0) showTab(0);
     });
     socket.on('booking:assigned', (booking) => {
-      allBookings = allBookings.map(b => b.id === booking.id ? {...b, ...booking} : b);
+      allBookings = allBookings.map(b => b.id === booking.id ? {...b,...booking} : b);
       if (curTab === 0) showTab(0);
     });
     socket.on('booking:completed', (booking) => {
-      allBookings = allBookings.map(b => b.id === booking.id ? {...b, ...booking, status:'completed'} : b);
-      allDrivers = allDrivers.map(d => d.id === booking.driver_id ? {...d, status:'available'} : d);
+      allBookings = allBookings.map(b => b.id === booking.id ? {...b,...booking,status:'completed'} : b);
+      allDrivers = allDrivers.map(d => d.id === booking.driver_id ? {...d,status:'available'} : d);
       showAlert('✅ Resa slutförd — ' + booking.booking_ref + ' · ' + (booking.fare_sek||0) + ' kr', 'success');
       showToast('✅ ' + booking.booking_ref + ' avslutad');
       if (curTab === 0) showTab(0);
       if (curTab === 2) showTab(2);
     });
     socket.on('booking:cancelled', (data) => {
-      allBookings = allBookings.map(b => b.id === data.id ? {...b, status:'cancelled', driver_id:null, driver_name:null} : b);
+      allBookings = allBookings.map(b => b.id === data.id ? {...b,status:'cancelled',driver_id:null,driver_name:null} : b);
       if (curTab === 0) showTab(0);
     });
     socket.on('booking:cancelRequest', (data) => {
@@ -335,7 +421,7 @@ function connectSocket() {
       updateDriverOnMap(data.driverId, data.lat, data.lng);
     });
     socket.on('driver:status', (data) => {
-      allDrivers = allDrivers.map(d => d.id === data.driverId ? {...d, status: data.status} : d);
+      allDrivers = allDrivers.map(d => d.id === data.driverId ? {...d,status:data.status} : d);
       if (curTab === 2) showTab(2);
     });
   } catch(e) { console.log('Socket error:', e); }
@@ -359,13 +445,14 @@ function showAlert(msg, type) {
 }
 
 function hideAlert() {
-  const banner = document.getElementById('alertBanner');
-  if (banner) banner.classList.remove('show');
+  const el = document.getElementById('alertBanner');
+  if (el) el.classList.remove('show');
 }
 
 function closeMod(id) { try { document.getElementById(id).classList.remove('open'); } catch(e) {} }
 function closeMIfOut(e, id) { if (e.target === document.getElementById(id)) closeMod(id); }
 
+// ── TABS ──
 function showTab(i) {
   try {
     curTab = i;
@@ -376,9 +463,11 @@ function showTab(i) {
     else if (i === 1) c.innerHTML = tabMap();
     else if (i === 2) c.innerHTML = tabDrivers();
     else if (i === 3) c.innerHTML = tabChat();
+    else if (i === 4) c.innerHTML = tabStaff();
   } catch(e) { console.log('showTab error:', e); }
 }
 
+// ── BOOKINGS TAB ──
 function tabBookings() {
   const pending = allBookings.filter(b => b.status === 'pending');
   const active = allBookings.filter(b => b.status === 'assigned');
@@ -389,18 +478,14 @@ function tabBookings() {
     '<div class="stats-grid">' +
     statCard(active.length, 'Aktiva resor', '#1a56db') +
     statCard(pending.length, 'Väntar', '#d97706') +
-    statCard(allDrivers.filter(d => d.status === 'available').length, 'Lediga förare', '#15803d') +
+    statCard(allDrivers.filter(d => d.status==='available').length, 'Lediga förare', '#15803d') +
     statCard(totalEarnings + ' kr', 'Intäkter idag', '#7c3aed') +
     '</div>' +
-    (pending.length > 0 ? '<div class="stitle">🔴 Väntar på förare (' + pending.length + ')</div>' +
-    pending.map(b => bookingCard(b)).join('') : '') +
-    (active.length > 0 ? '<div class="stitle">🔵 Aktiva resor (' + active.length + ')</div>' +
-    active.map(b => bookingCard(b)).join('') : '') +
-    (completed.length > 0 ? '<div class="stitle">✅ Avslutade (' + completed.length + ')</div>' +
-    completed.slice(0, 10).map(b => bookingCard(b)).join('') : '') +
-    (cancelled.length > 0 ? '<div class="stitle">❌ Avbokade (' + cancelled.length + ')</div>' +
-    cancelled.slice(0, 5).map(b => bookingCard(b)).join('') : '') +
-    (allBookings.length === 0 ? '<div class="empty"><div class="empty-icon">📋</div>Inga bokningar ännu</div>' : '') +
+    (pending.length > 0 ? '<div class="stitle">🔴 Väntar på förare (' + pending.length + ')</div>' + pending.map(bookingCard).join('') : '') +
+    (active.length > 0 ? '<div class="stitle">🔵 Aktiva resor (' + active.length + ')</div>' + active.map(bookingCard).join('') : '') +
+    (completed.length > 0 ? '<div class="stitle">✅ Avslutade (' + completed.length + ')</div>' + completed.slice(0,10).map(bookingCard).join('') : '') +
+    (cancelled.length > 0 ? '<div class="stitle">❌ Avbokade (' + cancelled.length + ')</div>' + cancelled.slice(0,5).map(bookingCard).join('') : '') +
+    (allBookings.length === 0 ? '<div class="empty">📋<br>Inga bokningar ännu</div>' : '') +
     '<div style="height:80px"></div></div>';
 }
 
@@ -419,9 +504,7 @@ function getBadge(status) {
 
 function bookingCard(b) {
   const isPre = b.booking_type === 'pre';
-  const cardClass = 'bcard ' + (b.status === 'pending' ? 'pending' :
-    b.status === 'assigned' ? 'assigned' :
-    b.status === 'completed' ? 'completed' : 'cancelled');
+  const cls = 'bcard ' + (b.status==='pending'?'pending':b.status==='assigned'?'assigned':b.status==='completed'?'completed':'cancelled');
   let actions = '';
   if (b.status === 'pending') {
     actions = '<button class="btn btn-primary btn-sm" onclick="openAssign(' + b.id + ',\'' + b.booking_ref + '\')">Tilldela förare</button>' +
@@ -433,48 +516,44 @@ function bookingCard(b) {
   } else if (b.status === 'completed') {
     actions = '<button class="btn btn-gray btn-sm" onclick="showToast(\'📄 ' + b.booking_ref + ' · ' + (b.fare_sek||0) + ' kr\')">📄 Kvitto</button>';
   }
-  return '<div class="' + cardClass + '">' +
+  return '<div class="' + cls + '">' +
     '<div class="btop"><span class="bref">' + b.booking_ref + '</span>' +
-    '<div style="display:flex;gap:4px;align-items:center">' +
-    (isPre ? '<span class="badge b-purple">📅 Förbokning</span>' : '') +
-    getBadge(b.status) + '</div></div>' +
-    (isPre && b.scheduled_at ? '<div style="font-size:11px;color:#7c3aed;font-weight:700;margin-bottom:4px">📅 ' +
-      new Date(b.scheduled_at).toLocaleString('sv-SE', {dateStyle:'medium',timeStyle:'short'}) + '</div>' : '') +
+    '<div style="display:flex;gap:4px">' + (isPre?'<span class="badge b-purple">📅 Förbokning</span>':'') + getBadge(b.status) + '</div></div>' +
+    (isPre&&b.scheduled_at?'<div style="font-size:11px;color:#7c3aed;font-weight:700;margin-bottom:4px">📅 '+new Date(b.scheduled_at).toLocaleString('sv-SE',{dateStyle:'medium',timeStyle:'short'})+'</div>':'') +
     '<div class="broute">📍 ' + b.from_address + ' → 🏁 ' + b.to_address + '</div>' +
     '<div class="bdetail">👤 ' + b.customer_name + ' · ' + (b.customer_phone||'') + '<br>' +
-    (b.driver_name ? '🚖 ' + b.driver_name + ' · ' : '') + b.fare_sek + ' kr · ' + b.payment_method + '<br>' +
-    '🕐 ' + new Date(b.created_at).toLocaleString('sv-SE', {dateStyle:'short',timeStyle:'short'}) + '</div>' +
-    (actions ? '<div class="bactions">' + actions + '</div>' : '') +
-    '</div>';
+    (b.driver_name?'🚖 '+b.driver_name+' · ':'') + b.fare_sek + ' kr · ' + b.payment_method + '<br>' +
+    '🕐 ' + new Date(b.created_at).toLocaleString('sv-SE',{dateStyle:'short',timeStyle:'short'}) + '</div>' +
+    (actions ? '<div class="bactions">' + actions + '</div>' : '') + '</div>';
 }
 
+// ── MAP TAB ──
 function tabMap() {
-  const availDrivers = allDrivers.filter(d => d.status !== 'offline');
+  const avail = allDrivers.filter(d => d.status !== 'offline');
   return '<div class="page">' +
-    '<div class="stitle">' + availDrivers.length + ' fordon aktiva</div>' +
     '<div class="mmap" id="liveMap">' +
     '<div class="mmap-bg"></div>' +
     '<div class="mroad-h" style="top:30%"></div><div class="mroad-h" style="top:55%"></div><div class="mroad-h" style="top:75%"></div>' +
     '<div class="mroad-v" style="left:25%"></div><div class="mroad-v" style="left:50%"></div><div class="mroad-v" style="left:75%"></div>' +
-    '<div class="map-live-badge">🔴 Live · ' + availDrivers.length + ' fordon</div>' +
-    availDrivers.map((d, i) => {
+    '<div class="map-live-badge">🔴 Live · ' + avail.length + ' fordon</div>' +
+    avail.map((d, i) => {
       const pos = driverPositions[d.id];
-      const x = pos ? Math.min(85, Math.max(15, ((pos.lng-17.8)/(18.2-17.8))*80+10)) : (20+i*25);
-      const y = pos ? Math.min(85, Math.max(15, ((59.5-pos.lat)/(59.5-59.2))*80+10)) : (30+i*20);
+      const x = pos ? Math.min(85,Math.max(15,((pos.lng-17.8)/(18.2-17.8))*80+10)) : (20+i*25);
+      const y = pos ? Math.min(85,Math.max(15,((59.5-pos.lat)/(59.5-59.2))*80+10)) : (30+i*20);
       const color = d.status==='available'?'#22c55e':d.status==='busy'?'#f97316':'#64748b';
       return '<div class="dmap-marker" id="dmarker-' + d.id + '" style="left:' + x + '%;top:' + y + '%;border-color:' + color + '">🚖</div>' +
         '<div class="dmap-label" id="dlabel-' + d.id + '" style="left:' + x + '%;top:calc(' + y + '% + 22px)">' + d.name.split(' ')[0] + '</div>';
     }).join('') + '</div>' +
-    '<div class="stitle">Förare på kartan</div>' +
-    availDrivers.map(d => {
-      const dotClass = d.status==='available'?'dot-available':d.status==='busy'?'dot-busy':'dot-offline';
-      const statusText = d.status==='available'?'Ledig':d.status==='busy'?'På uppdrag':'Offline';
+    '<div class="stitle">' + avail.length + ' aktiva fordon</div>' +
+    avail.map(d => {
+      const dot = d.status==='available'?'dot-available':d.status==='busy'?'dot-busy':'dot-offline';
+      const st = d.status==='available'?'Ledig':d.status==='busy'?'På uppdrag':'Offline';
       return '<div class="drv-card"><div class="drv-avatar">' + d.name.charAt(0) + '</div>' +
         '<div style="flex:1"><div style="font-size:14px;font-weight:700;color:#0d1b3e">' + d.name + '</div>' +
         '<div style="font-size:12px;color:#64748b">' + d.plate + ' · ' + (d.city||'') + '</div></div>' +
         '<div style="display:flex;align-items:center;gap:6px">' +
-        '<div class="drv-status-dot ' + dotClass + '"></div>' +
-        '<span style="font-size:12px;color:#64748b">' + statusText + '</span></div></div>';
+        '<div style="width:10px;height:10px;border-radius:50%" class="' + dot + '"></div>' +
+        '<span style="font-size:12px;color:#64748b">' + st + '</span></div></div>';
     }).join('') +
     '<div style="height:80px"></div></div>';
 }
@@ -483,15 +562,15 @@ function updateDriverOnMap(driverId, lat, lng) {
   const marker = document.getElementById('dmarker-' + driverId);
   const label = document.getElementById('dlabel-' + driverId);
   if (!marker) return;
-  const x = Math.min(85, Math.max(15, ((lng-17.8)/(18.2-17.8))*80+10));
-  const y = Math.min(85, Math.max(15, ((59.5-lat)/(59.5-59.2))*80+10));
+  const x = Math.min(85,Math.max(15,((lng-17.8)/(18.2-17.8))*80+10));
+  const y = Math.min(85,Math.max(15,((59.5-lat)/(59.5-59.2))*80+10));
   marker.style.left = x + '%'; marker.style.top = y + '%';
   if (label) { label.style.left = x + '%'; label.style.top = 'calc(' + y + '% + 22px)'; }
 }
 
+// ── DRIVERS TAB ──
 function tabDrivers() {
   return '<div class="page">' +
-    // ADD DRIVER FORM
     '<div class="card">' +
     '<div class="stitle">➕ Lägg till ny förare</div>' +
     '<input class="finput" id="newName" placeholder="Fullständigt namn *"/>' +
@@ -504,25 +583,23 @@ function tabDrivers() {
     '<div class="ib ib-red" id="drvErr" style="display:none"></div>' +
     '<button class="btn btn-primary" id="addDrvBtn" onclick="addDriver()">Lägg till förare →</button>' +
     '</div>' +
-    // DRIVER LIST
     '<div class="stitle">Alla förare (' + allDrivers.length + ')</div>' +
     allDrivers.map(d => {
-      const dotClass = d.status==='available'?'dot-available':d.status==='busy'?'dot-busy':'dot-offline';
-      const statusText = d.status==='available'?'🟢 Ledig':d.status==='busy'?'🟠 På uppdrag':'⚫ Offline';
-      const activeBook = allBookings.find(b => b.driver_id===d.id && b.status==='assigned');
+      const dot = d.status==='available'?'dot-available':d.status==='busy'?'dot-busy':'dot-offline';
+      const st = d.status==='available'?'🟢 Ledig':d.status==='busy'?'🟠 På uppdrag':'⚫ Offline';
+      const ab = allBookings.find(b => b.driver_id===d.id && b.status==='assigned');
       return '<div class="drv-card" style="align-items:flex-start">' +
         '<div class="drv-avatar">' + d.name.charAt(0) + '</div>' +
         '<div style="flex:1">' +
         '<div style="font-size:14px;font-weight:700;color:#0d1b3e">' + d.name + '</div>' +
         '<div style="font-size:12px;color:#64748b;margin-bottom:4px">' + d.plate + ' · ' + (d.taxi_nr||'') + ' · ' + (d.city||'') + '</div>' +
-        '<div style="font-size:12px;color:#64748b;margin-bottom:6px">' + statusText + ' · ⭐ ' + (d.rating||'—') + '</div>' +
-        (activeBook ? '<div style="font-size:11px;color:#1a56db;background:#dbeafe;padding:4px 8px;border-radius:6px;display:inline-block;margin-bottom:6px">' +
-          '📍 ' + activeBook.from_address + ' → ' + activeBook.to_address + '</div>' : '') +
+        '<div style="font-size:12px;color:#64748b;margin-bottom:6px">' + st + ' · ⭐ ' + (d.rating||'—') + '</div>' +
+        (ab?'<div style="font-size:11px;color:#1a56db;background:#dbeafe;padding:4px 8px;border-radius:6px;display:inline-block;margin-bottom:6px">📍 '+ab.from_address+' → '+ab.to_address+'</div>':'') +
         '<div style="display:flex;gap:6px;margin-top:6px">' +
         '<button class="btn btn-primary btn-sm" onclick="openChat(\'central-driver-' + d.id + '\',\'' + d.name + '\')">💬 Chatta</button>' +
         '</div></div></div>';
     }).join('') +
-    (allDrivers.length===0 ? '<div class="empty"><div class="empty-icon">🚖</div>Inga förare registrerade</div>' : '') +
+    (allDrivers.length===0?'<div class="empty">🚖<br>Inga förare</div>':'') +
     '<div style="height:80px"></div></div>';
 }
 
@@ -536,43 +613,39 @@ async function addDriver() {
   const pwd = document.getElementById('newPwd')?.value.trim();
   const err = document.getElementById('drvErr');
   const btn = document.getElementById('addDrvBtn');
-  if (!name||!email||!phone||!plate||!pwd) {
-    err.textContent = '⚠️ Fyll i alla obligatoriska fält (*)';
-    err.style.display = ''; return;
-  }
+  if (!name||!email||!phone||!plate||!pwd) { err.textContent='⚠️ Fyll i alla obligatoriska fält (*)'; err.style.display=''; return; }
   btn.textContent = 'Lägger till...'; btn.disabled = true; err.style.display = 'none';
   try {
     const res = await fetch(API + '/drivers/add', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ name, email, phone, plate, taxi_nr:taxi, city, password:pwd })
     });
     const data = await res.json();
     if (data.driver) {
       allDrivers.push(data.driver);
-      showToast('✅ ' + name + ' tillagd som förare!');
+      showToast('✅ ' + name + ' tillagd!');
       showAlert('✅ Ny förare: ' + name, 'success');
       showTab(2);
-    } else {
-      err.textContent = '⚠️ ' + (data.error || 'Kunde inte lägga till');
-      err.style.display = '';
-    }
-  } catch(e) { err.textContent = '⚠️ Nätverksfel'; err.style.display = ''; }
+    } else { err.textContent='⚠️ '+(data.error||'Fel'); err.style.display=''; }
+  } catch(e) { err.textContent='⚠️ Nätverksfel'; err.style.display=''; }
   btn.textContent = 'Lägg till förare →'; btn.disabled = false;
 }
 
+// ── CHAT TAB ──
 function tabChat() {
-  const activeBookings = allBookings.filter(b => b.status === 'assigned');
+  const activeBooks = allBookings.filter(b => b.status==='assigned');
   return '<div class="page">' +
     '<div class="stitle">Chatta med förare</div>' +
-    allDrivers.map(d => '<div class="drv-card" onclick="openChat(\'central-driver-' + d.id + '\',\'' + d.name + '\')" style="cursor:pointer">' +
+    allDrivers.map(d =>
+      '<div class="drv-card" onclick="openChat(\'central-driver-' + d.id + '\',\'' + d.name + '\')" style="cursor:pointer">' +
       '<div class="drv-avatar" style="background:#7c3aed">💬</div>' +
       '<div><div style="font-size:14px;font-weight:700;color:#0d1b3e">' + d.name + '</div>' +
       '<div style="font-size:12px;color:#64748b">' + d.plate + '</div></div>' +
       '<div style="margin-left:auto;color:#94a3b8;font-size:18px">›</div></div>'
     ).join('') +
-    (activeBookings.length > 0 ? '<div class="stitle" style="margin-top:6px">Chatta med kunder</div>' +
-    activeBookings.map(b => '<div class="drv-card" onclick="openChat(\'customer-central-' + b.id + '\',\'' + b.customer_name + '\')" style="cursor:pointer">' +
+    (activeBooks.length>0 ? '<div class="stitle" style="margin-top:6px">Chatta med kunder</div>' +
+    activeBooks.map(b =>
+      '<div class="drv-card" onclick="openChat(\'customer-central-' + b.id + '\',\'' + b.customer_name + '\')" style="cursor:pointer">' +
       '<div class="drv-avatar" style="background:#0d9488">👤</div>' +
       '<div><div style="font-size:14px;font-weight:700;color:#0d1b3e">' + b.customer_name + '</div>' +
       '<div style="font-size:12px;color:#64748b">' + b.booking_ref + ' · ' + b.customer_phone + '</div></div>' +
@@ -581,6 +654,161 @@ function tabChat() {
     '<div style="height:80px"></div></div>';
 }
 
+// ── STAFF TAB (admin only) ──
+function tabStaff() {
+  if (staffUser?.role !== 'admin') {
+    return '<div class="page"><div class="ib ib-red">⚠️ Endast admin kan hantera personal.</div></div>';
+  }
+  return '<div class="page">' +
+    // ADD STAFF FORM
+    '<div class="card">' +
+    '<div class="stitle">➕ Lägg till personal</div>' +
+    '<input class="finput" id="sName" placeholder="Fullständigt namn *"/>' +
+    '<input class="finput" id="sEmail" type="email" placeholder="E-post *"/>' +
+    '<input class="finput" id="sPwd" type="password" placeholder="Lösenord *"/>' +
+    '<label class="flabel">Roll</label>' +
+    '<select class="finput" id="sRole">' +
+    '<option value="dispatcher">Dispatcher</option>' +
+    '<option value="admin">Admin</option>' +
+    '</select>' +
+    '<div class="ib ib-red" id="staffErr" style="display:none"></div>' +
+    '<button class="btn btn-primary" id="addStaffBtn" onclick="addStaff()">Lägg till →</button>' +
+    '</div>' +
+    // MY ACCOUNT
+    '<div class="stitle">Mitt konto</div>' +
+    '<div class="staff-card">' +
+    '<div class="staff-avatar">' + (staffUser?.name?.charAt(0)||'?') + '</div>' +
+    '<div style="flex:1"><div style="font-size:14px;font-weight:700;color:#0d1b3e">' + (staffUser?.name||'') + '</div>' +
+    '<div style="font-size:12px;color:#64748b">' + (staffUser?.email||'') + '</div>' +
+    '<div style="margin-top:4px"><span class="badge ' + (staffUser?.role==='admin'?'b-admin':'b-disp') + '">' + (staffUser?.role==='admin'?'Admin':'Dispatcher') + '</span></div></div>' +
+    '<button class="btn btn-gray btn-sm" onclick="openChangePwd()">🔒 Lösenord</button>' +
+    '</div>' +
+    // STAFF LIST
+    '<div class="stitle">All personal (' + allStaff.length + ')</div>' +
+    allStaff.map(s =>
+      '<div class="staff-card">' +
+      '<div class="staff-avatar">' + s.name.charAt(0) + '</div>' +
+      '<div style="flex:1">' +
+      '<div style="font-size:14px;font-weight:700;color:#0d1b3e">' + s.name + '</div>' +
+      '<div style="font-size:12px;color:#64748b">' + s.email + '</div>' +
+      '<div style="margin-top:4px"><span class="badge ' + (s.role==='admin'?'b-admin':'b-disp') + '">' + (s.role==='admin'?'Admin':'Dispatcher') + '</span></div></div>' +
+      '<div style="display:flex;gap:6px">' +
+      '<button class="btn btn-gray btn-sm" onclick="openEditStaff(' + s.id + ',\'' + s.name + '\',\'' + s.email + '\',\'' + s.role + '\')">✏️</button>' +
+      (s.id !== staffUser?.id ? '<button class="btn btn-danger btn-sm" onclick="deleteStaff(' + s.id + ',\'' + s.name + '\')">🗑</button>' : '') +
+      '</div></div>'
+    ).join('') +
+    '<div style="height:80px"></div></div>';
+}
+
+async function addStaff() {
+  const name = document.getElementById('sName')?.value.trim();
+  const email = document.getElementById('sEmail')?.value.trim();
+  const pwd = document.getElementById('sPwd')?.value.trim();
+  const role = document.getElementById('sRole')?.value;
+  const err = document.getElementById('staffErr');
+  const btn = document.getElementById('addStaffBtn');
+  if (!name||!email||!pwd) { err.textContent='⚠️ Fyll i alla fält'; err.style.display=''; return; }
+  btn.textContent='Lägger till...'; btn.disabled=true; err.style.display='none';
+  try {
+    const res = await fetch(API + '/staff/add', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + staffToken },
+      body: JSON.stringify({ name, email, password: pwd, role })
+    });
+    const data = await res.json();
+    if (data.staff) {
+      allStaff.push(data.staff);
+      showToast('✅ ' + name + ' tillagd!');
+      showTab(4);
+    } else { err.textContent='⚠️ '+(data.error||'Fel'); err.style.display=''; }
+  } catch(e) { err.textContent='⚠️ Nätverksfel'; err.style.display=''; }
+  btn.textContent='Lägg till →'; btn.disabled=false;
+}
+
+function openEditStaff(id, name, email, role) {
+  document.getElementById('editStaffId').value = id;
+  document.getElementById('editStaffName').value = name;
+  document.getElementById('editStaffEmail').value = email;
+  document.getElementById('editStaffRole').value = role;
+  document.getElementById('editStaffPwd').value = '';
+  document.getElementById('editStaffErr').style.display = 'none';
+  document.getElementById('editStaffTitle').textContent = 'Redigera: ' + name;
+  document.getElementById('editStaffModal').classList.add('open');
+}
+
+async function saveStaff() {
+  const id = document.getElementById('editStaffId').value;
+  const name = document.getElementById('editStaffName').value.trim();
+  const email = document.getElementById('editStaffEmail').value.trim();
+  const role = document.getElementById('editStaffRole').value;
+  const pwd = document.getElementById('editStaffPwd').value.trim();
+  const err = document.getElementById('editStaffErr');
+  err.style.display = 'none';
+  try {
+    const body = { name, email, role };
+    if (pwd) body.password = pwd;
+    const res = await fetch(API + '/staff/' + id, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + staffToken },
+      body: JSON.stringify(body)
+    });
+    const data = await res.json();
+    if (data.staff) {
+      allStaff = allStaff.map(s => s.id === parseInt(id) ? data.staff : s);
+      closeMod('editStaffModal');
+      showToast('✅ ' + name + ' uppdaterad!');
+      showTab(4);
+    } else { err.textContent='⚠️ '+(data.error||'Fel'); err.style.display=''; }
+  } catch(e) { err.textContent='⚠️ Nätverksfel'; err.style.display=''; }
+}
+
+async function deleteStaff(id, name) {
+  if (!confirm('Ta bort ' + name + '?')) return;
+  try {
+    const res = await fetch(API + '/staff/' + id, {
+      method: 'DELETE',
+      headers: { 'Authorization': 'Bearer ' + staffToken }
+    });
+    if (res.ok) {
+      allStaff = allStaff.filter(s => s.id !== id);
+      showToast('✓ ' + name + ' borttagen');
+      showTab(4);
+    }
+  } catch(e) { showToast('⚠️ Nätverksfel'); }
+}
+
+function openChangePwd() {
+  document.getElementById('curPwd').value = '';
+  document.getElementById('newPwd').value = '';
+  document.getElementById('confPwd').value = '';
+  document.getElementById('pwdErr').style.display = 'none';
+  document.getElementById('changePwdModal').classList.add('open');
+}
+
+async function doChangePwd() {
+  const cur = document.getElementById('curPwd').value.trim();
+  const nw = document.getElementById('newPwd').value.trim();
+  const conf = document.getElementById('confPwd').value.trim();
+  const err = document.getElementById('pwdErr');
+  err.style.display = 'none';
+  if (!cur||!nw||!conf) { err.textContent='⚠️ Fyll i alla fält'; err.style.display=''; return; }
+  if (nw !== conf) { err.textContent='⚠️ Lösenorden matchar inte'; err.style.display=''; return; }
+  if (nw.length < 6) { err.textContent='⚠️ Minst 6 tecken'; err.style.display=''; return; }
+  try {
+    const res = await fetch(API + '/staff/change-password', {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + staffToken },
+      body: JSON.stringify({ current_password: cur, new_password: nw })
+    });
+    const data = await res.json();
+    if (data.success) {
+      closeMod('changePwdModal');
+      showToast('✅ Lösenord ändrat!');
+    } else { err.textContent='⚠️ '+(data.error||'Fel'); err.style.display=''; }
+  } catch(e) { err.textContent='⚠️ Nätverksfel'; err.style.display=''; }
+}
+
+// ── ASSIGN ──
 function openAssign(bookingId, bookingRef) {
   assignBookingId = bookingId; assignBookingRef = bookingRef;
   const booking = allBookings.find(b => b.id === bookingId);
@@ -610,8 +838,7 @@ async function doAssign(driverId, driverName) {
   closeMod('assignModal');
   try {
     const res = await fetch(API + '/bookings/' + assignBookingId + '/assign', {
-      method: 'PATCH',
-      headers: { 'Content-Type': 'application/json' },
+      method: 'PATCH', headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ driver_id: driverId })
     });
     if (res.ok) {
@@ -625,6 +852,7 @@ async function doAssign(driverId, driverName) {
   } catch(e) { showToast('⚠️ Nätverksfel'); }
 }
 
+// ── CANCEL ──
 function openCancel(bookingId, bookingRef) {
   cancelBookingId = bookingId; cancelBookingRef = bookingRef;
   const booking = allBookings.find(b => b.id === bookingId);
@@ -642,17 +870,18 @@ async function doCancel() {
     if (res.ok) {
       const booking = allBookings.find(b => b.id === cancelBookingId);
       if (booking?.driver_id) {
-        allDrivers = allDrivers.map(d => d.id===booking.driver_id ? {...d, status:'available'} : d);
+        allDrivers = allDrivers.map(d => d.id===booking.driver_id ? {...d,status:'available'} : d);
       }
       allBookings = allBookings.map(b => b.id===cancelBookingId ?
         {...b, status:'cancelled', driver_id:null, driver_name:null} : b);
       showAlert('Bokning ' + cancelBookingRef + ' avbokad', 'info');
       showToast('✓ ' + cancelBookingRef + ' avbokad');
       showTab(0);
-    } else { showToast('⚠️ Kunde inte avboka'); }
+    }
   } catch(e) { showToast('⚠️ Nätverksfel'); }
 }
 
+// ── CHAT ──
 function openChat(threadKey, personName) {
   currentChatKey = threadKey;
   document.getElementById('chatTitle').textContent = '💬 ' + personName;
@@ -675,10 +904,10 @@ async function loadChat(threadKey) {
     el.innerHTML = msgs.map(m => {
       const mine = m.sender_role === 'central';
       const avClass = m.sender_role==='driver'?'drv':m.sender_role==='customer'?'cus':'';
-      return '<div class="cmsg ' + (mine?'mine':'other') + '">' +
-        '<div class="cav ' + avClass + '">' + (m.sender_name?.charAt(0)||'?') + '</div>' +
-        '<div style="max-width:72%"><div style="font-size:10px;color:#94a3b8;margin-bottom:2px;text-align:' + (mine?'right':'left') + '">' + m.sender_name + '</div>' +
-        '<div class="cbubble">' + m.content + '</div></div></div>';
+      return '<div class="cmsg '+(mine?'mine':'other')+'">' +
+        '<div class="cav '+avClass+'">'+(m.sender_name?.charAt(0)||'?')+'</div>' +
+        '<div style="max-width:72%"><div style="font-size:10px;color:#94a3b8;margin-bottom:2px;text-align:'+(mine?'right':'left')+'">'+m.sender_name+'</div>' +
+        '<div class="cbubble">'+m.content+'</div></div></div>';
     }).join('');
     el.scrollTop = el.scrollHeight;
   } catch(e) {
@@ -695,14 +924,18 @@ async function sendChat() {
   const msg = document.createElement('div');
   msg.className = 'cmsg mine';
   msg.innerHTML = '<div class="cav">C</div><div style="max-width:72%">' +
-    '<div style="font-size:10px;color:#94a3b8;margin-bottom:2px;text-align:right">Central</div>' +
+    '<div style="font-size:10px;color:#94a3b8;margin-bottom:2px;text-align:right">' + (staffUser?.name||'Central') + '</div>' +
     '<div class="cbubble">' + text + '</div></div>';
   el.appendChild(msg); el.scrollTop = el.scrollHeight;
   if (input) input.value = '';
   try {
     await fetch(API + '/messages', {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ thread_key: currentChatKey, sender_name: 'Central Dispatch', sender_role: 'central', content: text })
+      body: JSON.stringify({
+        thread_key: currentChatKey,
+        sender_name: staffUser?.name || 'Central Dispatch',
+        sender_role: 'central', content: text
+      })
     });
   } catch(e) {}
 }
